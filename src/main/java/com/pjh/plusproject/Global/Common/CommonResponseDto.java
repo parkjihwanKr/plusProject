@@ -1,4 +1,4 @@
-package com.pjh.plusproject.Global;
+package com.pjh.plusproject.Global.Common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,12 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommonResponseDto<T> {
     private String message;
-    private int stateCode;
+    private int statusCode;
     private T data;
 
-    public CommonResponseDto(String messageString, int stateCode){
+    public CommonResponseDto(String message, int statusCode){
         this.message = message;
-        this.stateCode = stateCode;
-        this.data = null;
+        this.statusCode = statusCode;
     }
 }
