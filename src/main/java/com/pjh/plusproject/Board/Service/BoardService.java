@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -26,7 +27,19 @@ public class BoardService {
     @Transactional(readOnly = true)
     public CommonResponseDto<?> getAllBoardList(){
         List<Board> boardList = boardRepository.findAll();
-        return new CommonResponseDto<>("모든 게시글 조회", 200, boardList);
+        List<BoardResponseDTO> responseList = new ArrayList<>();
+        for(int i = 0; i<boardList.size(); i++){
+            Board board = boardList.get(i);
+            responseList.add(
+                    BoardResponseDTO.builder()
+                            .id(board.getId())
+                            .title(board.getTitle())
+                            .description(board.getDescription())
+                            .createAt(board.getCreatedAt())
+                            .writer(board.getMember().getUsername()).build()
+            );
+        }
+        return new CommonResponseDto<>("모든 게시글 조회", 200, responseList);
     }
 
     @Transactional

@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class BoardResponseDTO {
+
+    private Long id;
     private String writer;
     private String title;
     private String description;
     private LocalDateTime createAt;
-
-
 }
