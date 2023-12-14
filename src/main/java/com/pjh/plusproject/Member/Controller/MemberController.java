@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberService memberService;
     @PostMapping("/signup")
-    public ResponseEntity<CommonResponseDto<?>> signup(SignupDTO requestDto, BindingResult bindingResult){
+    public ResponseEntity<CommonResponseDto<?>> signup(@Valid SignupDTO requestDto, BindingResult bindingResult){
         log.info("requestDto.getUsername() : "+requestDto.getUsername());
         if(bindingResult.hasErrors()){
             for(FieldError error : bindingResult.getFieldErrors()){

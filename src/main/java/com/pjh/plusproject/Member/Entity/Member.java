@@ -29,4 +29,10 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private MemberRoleEnum role;
+
+    // password와 같은 정보 차단
+    public Member(Long id, String username){
+        this.id = id;
+        this.username = username;
+    }
 }
