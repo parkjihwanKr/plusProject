@@ -16,7 +16,9 @@ spring:
     multipart:
       enabled: true
       max-file-size: 2MB
-
+  mail:
+    username: ${your_naver_name}
+    password: ${your_naver_password}
 jwt:
   secret:
     key: ${jwt.secret.key}
