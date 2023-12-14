@@ -160,4 +160,13 @@ public class BoardService {
         boardRepository.save(board);
         return new CommonResponseDto<>("해당 게시글 수정 성공", 200, null);
     }
+
+    public CommonResponseDto<?> deleteBoard(long boardId, MemberDetailsImpl memberDetails) {
+        Board board = boardRepository.findById(boardId).orElse(null);
+        if(board == null){
+            return new CommonResponseDto<>("해당 Board의 Id는 존재하지 않습니다.", 400, null);
+        }
+        boardRepository.deleteById(boardId);
+        return new CommonResponseDto<>("게시글 삭제 성공", 200, null);
+    }
 }

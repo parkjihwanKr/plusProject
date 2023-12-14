@@ -64,4 +64,12 @@ public class BoardController {
         CommonResponseDto<?> responseDto = boardService.updateBoard(boardId, requestDTO, memberDetails);
         return new ResponseEntity<>(responseDto, HttpStatus.valueOf(responseDto.getStatusCode()));
     }
+
+    @DeleteMapping("/board/{boardId}")
+    public ResponseEntity<?> deleteBoard(
+            @PathVariable long boardId,
+            @AuthenticationPrincipal MemberDetailsImpl memberDetails){
+        CommonResponseDto<?> responseDto = boardService.deleteBoard(boardId, memberDetails);
+        return new ResponseEntity<>(responseDto, HttpStatus.valueOf(responseDto.getStatusCode()));
+    }
 }
