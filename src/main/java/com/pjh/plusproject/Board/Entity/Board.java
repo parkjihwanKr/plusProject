@@ -1,5 +1,6 @@
 package com.pjh.plusproject.Board.Entity;
 
+import com.pjh.plusproject.Board.DTO.BoardRequestDTO;
 import com.pjh.plusproject.Board.DTO.BoardResponseDTO;
 import com.pjh.plusproject.Global.Common.BaseEntity;
 import com.pjh.plusproject.Member.Entity.Member;
@@ -40,5 +41,10 @@ public class Board extends BaseEntity {
                 .title(board.getTitle())
                 .writer(board.getMember().getUsername())
                 .build();
+    }
+
+    public void update(BoardRequestDTO boardRequestDTO) {
+        this.title = boardRequestDTO.getTitle();
+        this.description = boardRequestDTO.getDescription();
     }
 }

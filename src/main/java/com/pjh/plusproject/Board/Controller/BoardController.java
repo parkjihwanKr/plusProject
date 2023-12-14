@@ -1,6 +1,7 @@
 package com.pjh.plusproject.Board.Controller;
 
 import com.pjh.plusproject.Board.DTO.BoardRequestDTO;
+import com.pjh.plusproject.Board.DTO.BoardResponseDTO;
 import com.pjh.plusproject.Board.Service.BoardService;
 import com.pjh.plusproject.Global.Common.CommonResponseDto;
 import com.pjh.plusproject.Global.Security.MemberDetailsImpl;
@@ -26,7 +27,21 @@ public class BoardController {
     @GetMapping("/board")
     public ResponseEntity<CommonResponseDto<?>> showAllBoardList(
             @PageableDefault(size = 3) Pageable pageable){
-            CommonResponseDto<?> responseDto = boardService.getAllBoardList(pageable);
+            CommonResponseDto<?> responseDto = boardService.showAllBoardList(pageable);
+        return new ResponseEntity<>(responseDto, HttpStatus.valueOf(responseDto.getStatusCode()));
+    }
+
+    @GetMapping("/board/{boardId}")
+    public ResponseEntity<CommonResponseDto<?>> showBoard(
+            @PathVariable long boardId){
+        CommonResponseDto<?> responseDto = boardService.showBoard(boardId);
+        return new ResponseEntity<>(responseDto, HttpStatus.valueOf(responseDto.getStatusCode()));
+    }
+
+    @GetMapping("/member/board/{memberId}")
+    public ResponseEntity<CommonResponseDto<?>> showMemberBoardList(
+            @PathVariable long memberId){
+        CommonResponseDto<?> responseDto = boardService.showMemberBoard(memberId);
         return new ResponseEntity<>(responseDto, HttpStatus.valueOf(responseDto.getStatusCode()));
     }
 
@@ -35,9 +50,18 @@ public class BoardController {
             @RequestParam("file")MultipartFile multipartFile,
             @Valid BoardRequestDTO requestDTO,
             @AuthenticationPrincipal MemberDetailsImpl memberDetails) throws IOException {
-        System.out.println("requestDTO.getTitle() : "+requestDTO.getTitle());
-        System.out.println("requestDTO.getDescription() : "+requestDTO.getDescription());
         CommonResponseDto<?> responseDto = boardService.createBoard(multipartFile, requestDTO, memberDetails);
+        return new ResponseEntity<>(responseDto, HttpStatus.valueOf(responseDto.getStatusCode()));
+    }
+
+    @PutMapping("/board/{boardId}")
+    public ResponseEntity<CommonResponseDto<?>> updateBoard(
+            @PathVariable long boardId,
+            @Valid @RequestBody BoardRequestDTO requestDTO,
+            @AuthenticationPrincipal MemberDetailsImpl memberDetails){
+        System.out.println("requestDto.getTitle() : "+requestDTO.getTitle());
+        System.out.println("requestDto.getDescription() : "+requestDTO.getDescription());
+        CommonResponseDto<?> responseDto = boardService.updateBoard(boardId, requestDTO, memberDetails);
         return new ResponseEntity<>(responseDto, HttpStatus.valueOf(responseDto.getStatusCode()));
     }
 }

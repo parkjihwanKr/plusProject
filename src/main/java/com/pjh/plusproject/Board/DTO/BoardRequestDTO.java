@@ -1,5 +1,6 @@
 package com.pjh.plusproject.Board.DTO;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,10 +11,10 @@ import lombok.Setter;
 @Builder
 public class BoardRequestDTO {
 
-    @Size(max = 500, message = "Title은 500자 이내로 입력하세요.")
+    @NotBlank(message = "Title은 필수 입력입니다.")
+    @Size(max = 500)
     private String title;
 
     @Size(max = 5000, message = "Description은 5000자 이내로 입력하세요.")
     private String description;
-
 }
