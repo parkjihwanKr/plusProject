@@ -4,6 +4,7 @@ import com.pjh.plusproject.Board.DTO.BoardRequestDTO;
 import com.pjh.plusproject.Board.Service.BoardService;
 import com.pjh.plusproject.Global.Common.CommonResponseDto;
 import com.pjh.plusproject.Global.Security.MemberDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -32,7 +33,7 @@ public class BoardController {
     @PostMapping("/board")
     public ResponseEntity<CommonResponseDto<?>> createBoard(
             @RequestParam("file")MultipartFile multipartFile,
-            BoardRequestDTO requestDTO,
+            @Valid BoardRequestDTO requestDTO,
             @AuthenticationPrincipal MemberDetailsImpl memberDetails) throws IOException {
         System.out.println("requestDTO.getTitle() : "+requestDTO.getTitle());
         System.out.println("requestDTO.getDescription() : "+requestDTO.getDescription());
