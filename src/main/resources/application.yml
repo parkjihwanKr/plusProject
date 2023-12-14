@@ -7,7 +7,6 @@ spring:
       hibernate:
         format_sql: true
     defer-datasource-initialization: true
-    database-platform: org.hibernate.dialect.MySQLDialect
   datasource:
     url: jdbc:mysql://localhost:3306/plusproject
     username: ${your_username}
@@ -23,3 +22,13 @@ spring:
 jwt:
   secret:
     key: ${jwt.secret.key}
+
+cloud:
+  aws:
+    s3:
+      bucket: ${your_bucket_name}
+    region:
+      static: ap-northeast-2
+    credentials:
+      accessKey: ${your_accessKey}
+      secretKey: ${your_secretKey}

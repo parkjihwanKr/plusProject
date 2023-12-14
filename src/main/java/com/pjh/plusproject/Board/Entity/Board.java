@@ -24,6 +24,8 @@ public class Board extends BaseEntity {
 
     private String description;
 
+    private String imageUrl;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
     private Member member;

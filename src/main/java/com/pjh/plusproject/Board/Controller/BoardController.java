@@ -11,6 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 @RestController
@@ -27,10 +30,13 @@ public class BoardController {
     }
 
     @PostMapping("/board")
-    public ResponseEntity<CommonResponseDto<?>> createBoard(BoardRequestDTO requestDTO, @AuthenticationPrincipal MemberDetailsImpl memberDetails){
+    public ResponseEntity<CommonResponseDto<?>> createBoard(
+            @RequestParam("file")MultipartFile multipartFile,
+            BoardRequestDTO requestDTO,
+            @AuthenticationPrincipal MemberDetailsImpl memberDetails) throws IOException {
         System.out.println("requestDTO.getTitle() : "+requestDTO.getTitle());
         System.out.println("requestDTO.getDescription() : "+requestDTO.getDescription());
-        CommonResponseDto<?> responseDto = boardService.createBoard(requestDTO, memberDetails);
+        CommonResponseDto<?> responseDto = boardService.createBoard(multipartFile, requestDTO, memberDetails);
         return new ResponseEntity<>(responseDto, HttpStatus.valueOf(responseDto.getStatusCode()));
     }
 }

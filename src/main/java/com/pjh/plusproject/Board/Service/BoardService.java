@@ -1,50 +1,39 @@
 package com.pjh.plusproject.Board.Service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.pjh.plusproject.Board.DTO.BoardRequestDTO;
 import com.pjh.plusproject.Board.DTO.BoardResponseDTO;
 import com.pjh.plusproject.Board.Entity.Board;
 import com.pjh.plusproject.Board.Repository.BoardRepository;
 import com.pjh.plusproject.Global.Common.CommonResponseDto;
 import com.pjh.plusproject.Global.Security.MemberDetailsImpl;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final AmazonS3 amazonS3;
 
-    // 페이징 없이 만든 전체 board List 조회
-    /*
-    @Transactional(readOnly = true)
-    public CommonResponseDto<?> getAllBoardList(Pageable pageable){
-        // 여기에 담긴 boardPage를 모두 조회, 조건 없음
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
-        List<Board> boardList = boardRepository.findAll();
-        List<BoardResponseDTO> responseList = new ArrayList<>();
-
-        for(int i = 0; i<boardList.size(); i++){
-            Board board = boardList.get(i);
-            responseList.add(
-                    BoardResponseDTO.builder()
-                            .memberId(board.getMember().getId())
-                            .boardId(board.getId())
-                            .title(board.getTitle())
-                            .description(board.getDescription())
-                            .createAt(board.getCreatedAt())
-                            .writer(board.getMember().getUsername()).build()
-            );
-        }
-        return new CommonResponseDto<>("모든 게시글 조회", 200, responseList);
-    }*/
+    public BoardService(BoardRepository boardRepository, AmazonS3 amazonS3){
+        this.boardRepository = boardRepository;
+        this.amazonS3 = amazonS3;
+    }
 
     // Page<BoardResponseDto> reponseList 형태로 repository 접근은 좋지 않음
     // 이유 : 역할의 분리 측면에서 좋지 않음
@@ -56,7 +45,8 @@ public class BoardService {
     // 만약 DTO가 Persistence layer까지 간다면 코드 변경에 repository의 변경까지 이어짐
     @Transactional(readOnly = true)
     public CommonResponseDto<?> getAllBoardList(Pageable pageable){
-        // 여기에 담긴 boardPage를 모두 조회, 조건 없음
+        // 커스텀 정렬 페이지
+        // 해당 페이지는 list를 3개를 받아오며 id는 오름차순으로 정렬합니다.
         Page<Board> boardPage = boardRepository.showBoardPage(pageable);
 
         List<BoardResponseDTO> responseList =
@@ -73,14 +63,35 @@ public class BoardService {
 
         return new CommonResponseDto<>("모든 게시글 조회", 200, responseList);
     }
-
     @Transactional
-    public CommonResponseDto<?> createBoard(BoardRequestDTO requestDTO, MemberDetailsImpl memberDetails) {
+    public CommonResponseDto<?> createBoard(
+            MultipartFile image,
+            BoardRequestDTO requestDTO,
+            MemberDetailsImpl memberDetails) throws IOException {
+        log.info("Service method start!");
+        String uuidImageName = null;
+
+        try {
+            String uuid = UUID.randomUUID().toString();
+            String originalImageName = image.getOriginalFilename();
+
+            uuidImageName = uuid+"_"+originalImageName;
+
+            ObjectMetadata metaData = new ObjectMetadata();
+            metaData.setContentType(image.getContentType());
+            metaData.setContentLength(image.getSize());
+            amazonS3.putObject(bucket, uuidImageName, image.getInputStream(), metaData);
+
+        }catch (IOException e){
+            e.printStackTrace();
+            return new CommonResponseDto<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), null);
+        }
 
         Board boardEntity = Board.builder()
                 .title(requestDTO.getTitle())
                 .description(requestDTO.getDescription())
                 .member(memberDetails.getMember())
+                .imageUrl(uuidImageName)
                 .build();
 
         boardRepository.save(boardEntity);

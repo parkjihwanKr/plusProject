@@ -42,6 +42,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.1'
     // email 인증 코드 추가
 
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    // s3 연동
+
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
