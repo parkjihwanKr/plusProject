@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class BoardResponseDTO {
-
-    private Long id;
+    private Long memberId;
+    private Long boardId;
     private String writer;
     private String title;
     private String description;

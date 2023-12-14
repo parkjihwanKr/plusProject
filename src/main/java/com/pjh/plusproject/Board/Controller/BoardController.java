@@ -5,10 +5,13 @@ import com.pjh.plusproject.Board.Service.BoardService;
 import com.pjh.plusproject.Global.Common.CommonResponseDto;
 import com.pjh.plusproject.Global.Security.MemberDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -17,8 +20,9 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("/board")
-    public ResponseEntity<CommonResponseDto<?>> showAllBoardList(){
-            CommonResponseDto<?> responseDto = boardService.getAllBoardList();
+    public ResponseEntity<CommonResponseDto<?>> showAllBoardList(
+            @PageableDefault(size = 3) Pageable pageable){
+            CommonResponseDto<?> responseDto = boardService.getAllBoardList(pageable);
         return new ResponseEntity<>(responseDto, HttpStatus.valueOf(responseDto.getStatusCode()));
     }
 

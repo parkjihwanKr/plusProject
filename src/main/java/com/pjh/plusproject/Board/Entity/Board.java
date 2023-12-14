@@ -31,6 +31,8 @@ public class Board extends BaseEntity {
 
     public BoardResponseDTO showBoard(Board board){
         return BoardResponseDTO.builder()
+                .memberId(board.getMember().getId())
+                .boardId(board.getId())
                 .createAt(board.getCreatedAt())
                 .description(board.getDescription())
                 .title(board.getTitle())
