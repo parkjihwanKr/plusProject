@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j(topic = "Member Controller")
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class MemberController {
     private final MemberService memberService;
     @PostMapping("/signup")

@@ -62,19 +62,19 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-                        .requestMatchers("/signup").permitAll()
+                        .requestMatchers("/api/v1/signup").permitAll()
                         .anyRequest().authenticated()
         );
 
         http.formLogin((formLogin) ->
                         formLogin
-                                .loginPage("/loginPage").permitAll()
-                                .defaultSuccessUrl("/homePage")
+                                .loginPage("/api/v1/loginPage").permitAll()
+                                .defaultSuccessUrl("/api/v1/homePage")
                 // loginPage 임시 지정
         ).logout(logout ->
                 logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/loginPage")
+                        .logoutUrl("/api/v1/logout")
+                        .logoutSuccessUrl("/api/v1/loginPage")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
         );
