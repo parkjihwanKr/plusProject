@@ -73,4 +73,13 @@ public class CommentService {
         commentRepository.save(comment);
         return new CommonResponseDto<>("댓글 수정 성공", 200, null);
     }
+
+    public CommonResponseDto<?> deleteComment(long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElse(null);
+        if(comment == null){
+            return new CommonResponseDto<>("해당 댓글은 존재하지 않습니다.", 400, null);
+        }
+        commentRepository.deleteById(commentId);
+        return new CommonResponseDto<>("댓글 삭제 성공", 200, null);
+    }
 }

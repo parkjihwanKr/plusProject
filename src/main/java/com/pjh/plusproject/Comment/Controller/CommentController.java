@@ -29,4 +29,10 @@ public class CommentController {
         CommonResponseDto<?> responseDto = commentService.updateComment(commentId, requestDTO);
         return new ResponseEntity<>(responseDto, HttpStatusCode.valueOf(responseDto.getStatusCode()));
     }
+
+    @DeleteMapping("/board/comment/{commentId}")
+    public ResponseEntity<CommonResponseDto<?>> deleteComment(@PathVariable long commentId){
+        CommonResponseDto<?> responseDto = commentService.deleteComment(commentId);
+        return new ResponseEntity<>(responseDto, HttpStatusCode.valueOf(responseDto.getStatusCode()));
+    }
 }
