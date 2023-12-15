@@ -55,4 +55,22 @@ public class CommentService {
 
         return new CommonResponseDto<>("댓글 작성 성공", 201, responseDTO);
     }
+
+    public CommonResponseDto<?> updateComment(long commentId, CommentRequestDTO requestDTO) {
+        Comment comment = commentRepository.findById(commentId).orElse(null);
+        if(comment == null){
+            return new CommonResponseDto<>("해당 댓글은 존재하지 않는 댓글입니다.", 400, null);
+        }
+        Board board = boardRepository.findById(comment.getBoard().getId()).orElse(null);
+        if(board == null){
+            return new CommonResponseDto<>("해당 게시글은 존재하지 않습니다.", 400, null);
+        }
+        Member member = memberRepository.findById(comment.getMember().getId()).orElse(null);
+        if(member == null){
+            return new CommonResponseDto<>("해당 멤버는 삭제했거나 존재하지 않는 멤버입니다.", 400, null);
+        }
+        comment.updateComment(requestDTO);
+        commentRepository.save(comment);
+        return new CommonResponseDto<>("댓글 수정 성공", 200, null);
+    }
 }

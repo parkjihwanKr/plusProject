@@ -23,4 +23,10 @@ public class CommentController {
         CommonResponseDto<?> responseDto = commentService.createComment(boardId, requestDTO);
         return new ResponseEntity<>(responseDto, HttpStatusCode.valueOf(responseDto.getStatusCode()));
     }
+
+    @PutMapping("/board/comment/{commentId}")
+    public ResponseEntity<CommonResponseDto<?>> updateComment(@PathVariable long commentId, CommentRequestDTO requestDTO){
+        CommonResponseDto<?> responseDto = commentService.updateComment(commentId, requestDTO);
+        return new ResponseEntity<>(responseDto, HttpStatusCode.valueOf(responseDto.getStatusCode()));
+    }
 }

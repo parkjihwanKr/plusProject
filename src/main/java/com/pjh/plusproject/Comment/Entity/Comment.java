@@ -32,4 +32,7 @@ public class Comment extends BaseEntity {
     private Board board; // 댓글이 달린 게시물
     // 지연 로딩에서 즉시 로딩 변경
 
+    public void updateComment(CommentRequestDTO requestDTO){
+        this.content = requestDTO.getContent();
+    }
 }

@@ -62,11 +62,10 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-                        /*.requestMatchers("/api/v1/signup").permitAll()
+                        .requestMatchers("/api/v1/signup").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/member/board/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/board/**").permitAll()
-                        .anyRequest().authenticated()*/
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
         );
 
         http.formLogin((formLogin) ->
