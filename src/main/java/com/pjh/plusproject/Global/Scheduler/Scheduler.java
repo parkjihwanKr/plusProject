@@ -31,14 +31,12 @@ public class Scheduler {
         // 지금 현 날짜 00시의 -90일
         LocalDateTime ninetyDaysAgo = LocalDateTime.now().minusDays(90);
 
-        List<Board> boardList = boardService.findBoardOlderThan(ninetyDaysAgo);
+        List<Board> boardList = boardService.findBoardCreatedBefore90Days(ninetyDaysAgo);
 
         if(boardList != null){
             for(int i = 0; i<boardList.size(); i++){
-                long boardId = boardList.get(i).getId();
-                boardService.deleteBoard(boardId);
+                boardService.deleteBoard(boardList.get(i).getId());
             }
         }
     }
-
 }

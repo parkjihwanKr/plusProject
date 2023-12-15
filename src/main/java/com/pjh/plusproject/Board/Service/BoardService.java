@@ -45,7 +45,6 @@ public class BoardService {
             MultipartFile image,
             BoardRequestDTO requestDTO,
             MemberDetailsImpl memberDetails){
-        log.info("Service method start!");
         String uuidImageName = null;
 
         try {
@@ -168,11 +167,13 @@ public class BoardService {
         if(board == null){
             return new CommonResponseDto<>("해당 Board의 Id는 존재하지 않습니다.", 400, null);
         }
+        // deleteById또한 내부 @Transactional 존재하여 안적어도 됨
         boardRepository.deleteById(boardId);
         return new CommonResponseDto<>("게시글 삭제 성공", 200, null);
     }
 
-    public List<Board> findBoardOlderThan(LocalDateTime ninetyDaysAgo){
+    @Transactional(readOnly = true)
+    public List<Board> findBoardCreatedBefore90Days(LocalDateTime ninetyDaysAgo){
         return boardRepository.findByCreatedAtBefore(ninetyDaysAgo);
     }
 }
