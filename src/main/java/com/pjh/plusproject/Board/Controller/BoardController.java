@@ -59,17 +59,13 @@ public class BoardController {
             @PathVariable long boardId,
             @Valid @RequestBody BoardRequestDTO requestDTO,
             @AuthenticationPrincipal MemberDetailsImpl memberDetails){
-        System.out.println("requestDto.getTitle() : "+requestDTO.getTitle());
-        System.out.println("requestDto.getDescription() : "+requestDTO.getDescription());
         CommonResponseDto<?> responseDto = boardService.updateBoard(boardId, requestDTO, memberDetails);
         return new ResponseEntity<>(responseDto, HttpStatus.valueOf(responseDto.getStatusCode()));
     }
 
     @DeleteMapping("/board/{boardId}")
-    public ResponseEntity<?> deleteBoard(
-            @PathVariable long boardId,
-            @AuthenticationPrincipal MemberDetailsImpl memberDetails){
-        CommonResponseDto<?> responseDto = boardService.deleteBoard(boardId, memberDetails);
+    public ResponseEntity<?> deleteBoard(@PathVariable long boardId){
+        CommonResponseDto<?> responseDto = boardService.deleteBoard(boardId);
         return new ResponseEntity<>(responseDto, HttpStatus.valueOf(responseDto.getStatusCode()));
     }
 }

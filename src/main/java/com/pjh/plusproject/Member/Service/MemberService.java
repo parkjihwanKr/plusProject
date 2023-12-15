@@ -35,6 +35,6 @@ public class MemberService {
                 .role(MemberRoleEnum.USER)
                 .build();
         memberRepository.save(member);
-        return new CommonResponseDto<>("회원 가입에 성공하셨습니다.", 200);
+        return new CommonResponseDto<>("회원 가입에 성공하셨습니다.", 201);
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -72,7 +73,7 @@ public class BoardService {
 
         boardRepository.save(boardEntity);
         BoardResponseDTO responseDTO = boardEntity.showBoard(boardEntity);
-        return new CommonResponseDto<>("게시글 작성 성공", 200, responseDTO);
+        return new CommonResponseDto<>("게시글 작성 성공", 201, responseDTO);
     }
 
     // Page<BoardResponseDto> reponseList 형태로 repository 접근은 좋지 않음
@@ -161,12 +162,17 @@ public class BoardService {
         return new CommonResponseDto<>("해당 게시글 수정 성공", 200, null);
     }
 
-    public CommonResponseDto<?> deleteBoard(long boardId, MemberDetailsImpl memberDetails) {
+    public CommonResponseDto<?> deleteBoard(long boardId) {
+        // 해당 메서드는 WebSecurityConfig에서 인증된 사용자가 아니면 접근을 못함.
         Board board = boardRepository.findById(boardId).orElse(null);
         if(board == null){
             return new CommonResponseDto<>("해당 Board의 Id는 존재하지 않습니다.", 400, null);
         }
         boardRepository.deleteById(boardId);
         return new CommonResponseDto<>("게시글 삭제 성공", 200, null);
+    }
+
+    public List<Board> findBoardOlderThan(LocalDateTime ninetyDaysAgo){
+        return boardRepository.findByCreatedAtBefore(ninetyDaysAgo);
     }
 }
