@@ -74,4 +74,10 @@ public class CommentService {
         return new CommonResponseDto<>("댓글 삭제 성공", HttpStatusCode.OK, null);
     }
 
+    /*
+    [ ]  챌린지 과제) 전체 조회가 아닌 페이징 조회를 할 수 있도록 해보기
+    [ ]  (챌린지 과제) 페이징 + 커스텀 정렬 기능 구현하기 -> 사용자가 입력한 key와
+    정렬 기준을 동적으로 입력 받아, 해당 기준에 맞게 데이터를 제공.
+    (예. 작성자명 오름차순 정렬 and 작성 날짜 오름차순 정렬된 결과를 상위 5개만 출력)
+    */
 }
