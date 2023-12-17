@@ -47,4 +47,15 @@ public class Board extends BaseEntity {
         this.title = boardRequestDTO.getTitle();
         this.description = boardRequestDTO.getDescription();
     }
+
+    public BoardResponseDTO showUpdateBoard(Board board){
+        return BoardResponseDTO.builder()
+                .boardId(board.getId())
+                .memberId(board.getMember().getId())
+                .writer(board.getMember().getUsername())
+                .title(board.getTitle())
+                .description(board.getDescription())
+                .createAt(board.getCreatedAt())
+                .build();
+    }
 }

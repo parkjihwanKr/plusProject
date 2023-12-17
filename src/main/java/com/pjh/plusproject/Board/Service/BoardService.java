@@ -7,6 +7,7 @@ import com.pjh.plusproject.Board.DTO.BoardResponseDTO;
 import com.pjh.plusproject.Board.Entity.Board;
 import com.pjh.plusproject.Board.Repository.BoardRepository;
 import com.pjh.plusproject.Global.Common.CommonResponseDto;
+import com.pjh.plusproject.Global.Exception.HttpStatusCode;
 import com.pjh.plusproject.Global.Security.MemberDetailsImpl;
 import com.pjh.plusproject.Member.Entity.Member;
 import com.pjh.plusproject.Member.Repository.MemberRepository;
@@ -14,16 +15,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -60,7 +60,7 @@ public class BoardService {
 
         }catch (IOException e){
             e.printStackTrace();
-            return new CommonResponseDto<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), null);
+            return new CommonResponseDto<>(e.getMessage(), HttpStatusCode.INTERNAL_SERVER_ERROR, new Date());
         }
 
         Board boardEntity = Board.builder()
@@ -72,7 +72,7 @@ public class BoardService {
 
         boardRepository.save(boardEntity);
         BoardResponseDTO responseDTO = boardEntity.showBoard(boardEntity);
-        return new CommonResponseDto<>("게시글 작성 성공", 201, responseDTO);
+        return new CommonResponseDto<>("게시글 작성 성공", HttpStatusCode.CREATED, responseDTO);
     }
 
     // Page<BoardResponseDto> reponseList 형태로 repository 접근은 좋지 않음
@@ -101,20 +101,17 @@ public class BoardService {
                                 .build()
                 ).getContent();
 
-        return new CommonResponseDto<>("모든 게시글 조회", 200, responseList);
+        return new CommonResponseDto<>("모든 게시글 조회", HttpStatusCode.OK, responseList);
     }
 
     @Transactional(readOnly = true)
     public CommonResponseDto<?> showMemberBoard(long memberId){
-        Member member = memberRepository.findById(memberId).orElse(null);
-        if(member == null){
-            return new CommonResponseDto<>("해당 멤버는 존재하지 않습니다.", 400, null);
-        }
+        Member member = memberRepository.findById(memberId).orElseThrow();
         List<Board> memberBoard = boardRepository.findAllByMemberId(memberId);
 
         if(memberBoard == null){
             // 조회는 성공 했기 때문에 statusCode를 400으로 돌려줄 순 없음.
-            return new CommonResponseDto<>("해당 멤버의 게시글이 존재하지 않습니다.", 200, null);
+            throw new NoSuchElementException();
         }else{
             // member가 존재하면
             // 해당 사항은 title, description, createAt만 보여 줘도 됨
@@ -131,7 +128,7 @@ public class BoardService {
                             .build()
                 );
             }
-            return new CommonResponseDto<>("해당 멤버의 모든 게시글 조회 성공", 200, responseDTO);
+            return new CommonResponseDto<>("해당 멤버의 모든 게시글 조회 성공", HttpStatusCode.OK, responseDTO);
         }
     }
 
@@ -139,37 +136,30 @@ public class BoardService {
     public CommonResponseDto<BoardResponseDTO> showBoard(long boardId) {
         Board board = boardRepository.findById(boardId).orElse(null);
         if(board == null){
-            return new CommonResponseDto<>("해당 게시글은 존재하지 않습니다.", 400, null);
+            //return new CommonResponseDto<>("해당 게시글은 존재하지 않습니다.", 400, null);
         }
         BoardResponseDTO responseDTO = board.showBoard(board);
 
-        return new CommonResponseDto<>("해당 게시글 조회 성공", 200, responseDTO);
+        return new CommonResponseDto<>("해당 게시글 조회 성공", HttpStatusCode.OK, responseDTO);
     }
 
     @Transactional
     public CommonResponseDto<?> updateBoard(long boardId, BoardRequestDTO boardRequestDTO, MemberDetailsImpl memberDetails){
-        Board board = boardRepository.findById(boardId).orElse(null);
-        if(board == null){
-            return new CommonResponseDto<>("해당 Board의 Id는 존재하지 않습니다.", 400, null);
-        }
-        Member member = memberRepository.findById(memberDetails.getMember().getId()).orElse(null);
-        if(member == null){
-            return new CommonResponseDto<>("해당 Member의 Id는 존재하지 않습니다.",400, null);
-        }
+        Board board = boardRepository.findById(boardId).orElseThrow();
+        Member member = memberRepository.findById(memberDetails.getMember().getId()).orElseThrow();
         board.update(boardRequestDTO);
+        BoardResponseDTO responseDTO = board.showUpdateBoard(board);
         boardRepository.save(board);
-        return new CommonResponseDto<>("해당 게시글 수정 성공", 200, null);
+        return new CommonResponseDto<>("해당 게시글 수정 성공", HttpStatusCode.OK, responseDTO);
     }
+
 
     public CommonResponseDto<?> deleteBoard(long boardId) {
         // 해당 메서드는 WebSecurityConfig에서 인증된 사용자가 아니면 접근을 못함.
-        Board board = boardRepository.findById(boardId).orElse(null);
-        if(board == null){
-            return new CommonResponseDto<>("해당 Board의 Id는 존재하지 않습니다.", 400, null);
-        }
+        Board board = boardRepository.findById(boardId).orElseThrow();
         // deleteById또한 내부 @Transactional 존재하여 안적어도 됨
         boardRepository.deleteById(boardId);
-        return new CommonResponseDto<>("게시글 삭제 성공", 200, null);
+        return new CommonResponseDto<>("게시글 삭제 성공", HttpStatusCode.OK, null);
     }
 
     @Transactional(readOnly = true)
