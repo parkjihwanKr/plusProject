@@ -15,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -26,8 +29,20 @@ public class CommentService {
 
     // 해당 조회 부분 안 만들었네?
     public CommonResponseDto<?> showBoardAllComment(long boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow();
-        return null;
+        boardRepository.findById(boardId).orElseThrow();
+        List<Comment> commentList = commentRepository.findByBoardId(boardId);
+        List<CommentResponseDTO> responseDTOList = new ArrayList<>();
+        for(int i = 0; i<commentList.size(); i++){
+            responseDTOList.add(
+                    CommentResponseDTO.builder()
+                            .commentId(commentList.get(i).getId())
+                            .createdAt(commentList.get(i).getCreatedAt())
+                            .content(commentList.get(i).getContent())
+                            .writer(commentList.get(i).getMember().getUsername())
+                            .build()
+            );
+        }
+        return new CommonResponseDto<>("해당 게시글 모든 댓글 조회", HttpStatusCode.OK, responseDTOList);
     }
     public CommonResponseDto<?> createComment(long boardId, CommentRequestDTO commentRequestDTO) {
         // 한 게시글에 여러 개의 댓글이 달릴 수 있음

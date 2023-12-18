@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class CommentResponseDTO {
+    private long commentId;
     // 작성자
     private String writer;
 
