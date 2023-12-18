@@ -50,12 +50,7 @@ public class CommentService {
 
         commentRepository.save(comment);
 
-        CommentResponseDTO responseDTO = CommentResponseDTO.builder()
-                .createdAt(comment.getCreatedAt())
-                .content(comment.getContent())
-                .writer(comment.getMember().getUsername())
-                .build();
-
+        CommentResponseDTO responseDTO = comment.showResponseDTO(comment);
         return new CommonResponseDto<>("댓글 작성 성공", HttpStatusCode.OK, responseDTO);
     }
 
@@ -64,10 +59,10 @@ public class CommentService {
         boardRepository.findById(comment.getBoard().getId()).orElseThrow();
         memberRepository.findById(comment.getMember().getId()).orElseThrow();
         comment.updateComment(requestDTO.getContent());
-        log.info("comment.getContent() : "+comment.getContent());
-        log.info("CommentRequestDTO.getContent() : "+requestDTO.getContent());
         commentRepository.save(comment);
-        return new CommonResponseDto<>("댓글 수정 성공", HttpStatusCode.OK, null);
+        CommentResponseDTO responseDTO = comment.showResponseDTO(comment);
+
+        return new CommonResponseDto<>("댓글 수정 성공", HttpStatusCode.OK, responseDTO);
     }
 
     public CommonResponseDto<?> deleteComment(long commentId) {

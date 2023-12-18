@@ -2,6 +2,7 @@ package com.pjh.plusproject.Comment.Entity;
 
 import com.pjh.plusproject.Board.Entity.Board;
 import com.pjh.plusproject.Comment.DTO.CommentRequestDTO;
+import com.pjh.plusproject.Comment.DTO.CommentResponseDTO;
 import com.pjh.plusproject.Global.Common.BaseEntity;
 import com.pjh.plusproject.Member.Entity.Member;
 import jakarta.persistence.*;
@@ -31,6 +32,14 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "board_id")
     private Board board; // 댓글이 달린 게시물
     // 지연 로딩에서 즉시 로딩 변경
+
+    public CommentResponseDTO showResponseDTO(Comment comment){
+        return CommentResponseDTO.builder()
+                .writer(comment.getMember().getUsername())
+                .content(comment.getContent())
+                .createdAt(comment.getCreatedAt())
+                .build();
+    }
 
     public void updateComment(String changeContent){
         this.content = changeContent;
