@@ -63,7 +63,9 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
         boardRepository.findById(comment.getBoard().getId()).orElseThrow();
         memberRepository.findById(comment.getMember().getId()).orElseThrow();
-        comment.updateComment(requestDTO);
+        comment.updateComment(requestDTO.getContent());
+        log.info("comment.getContent() : "+comment.getContent());
+        log.info("CommentRequestDTO.getContent() : "+requestDTO.getContent());
         commentRepository.save(comment);
         return new CommonResponseDto<>("댓글 수정 성공", HttpStatusCode.OK, null);
     }

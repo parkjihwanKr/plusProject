@@ -32,7 +32,8 @@ public class CommentController {
     }
 
     @PutMapping("/board/comment/{commentId}")
-    public ResponseEntity<CommonResponseDto<?>> updateComment(@PathVariable long commentId, CommentRequestDTO requestDTO){
+    public ResponseEntity<CommonResponseDto<?>> updateComment(@PathVariable long commentId, @RequestBody CommentRequestDTO requestDTO){
+        // raw json으로 흘러 들어가는 것은 무조건 @RequestBody 작성
         CommonResponseDto<?> responseDto = commentService.updateComment(commentId, requestDTO);
         return new ResponseEntity<>(responseDto, responseDto.getStatus().getHttpStatus());
     }

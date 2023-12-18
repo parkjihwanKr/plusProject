@@ -9,6 +9,7 @@ spring:
     defer-datasource-initialization: true
   datasource:
     url: jdbc:mysql://localhost:3306/plusproject
+    # url : aws -> end point
     username: ${your_username}
     password: ${your_password}
     driver-class-name: com.mysql.cj.jdbc.Driver

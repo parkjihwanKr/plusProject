@@ -13,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 @Service
 @RequiredArgsConstructor
 public class LikeService {
@@ -27,6 +30,7 @@ public class LikeService {
                 .board(board)
                 .fromMember(board.getMember())
                 .build();
+        HashMap<String, Integer> set = new HashMap<>();
 
         likeRepository.save(like);
 
