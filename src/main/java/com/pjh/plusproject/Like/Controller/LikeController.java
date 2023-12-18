@@ -26,13 +26,13 @@ public class LikeController {
 
     @PostMapping("/member/{memberId}/like")
     public ResponseEntity<CommonResponseDto<?>> likeMember(@PathVariable long memberId){
-        CommonResponseDto<?> responseDto = likeService.likeBoard(memberId);
+        CommonResponseDto<?> responseDto = likeService.likeMember(memberId);
         return new ResponseEntity<>(responseDto, responseDto.getStatus().getHttpStatus());
     }
 
     @DeleteMapping("/member/{memberId}/like")
     public ResponseEntity<CommonResponseDto<?>> unlikeMember(@PathVariable long memberId){
-        CommonResponseDto<?> responseDto = likeService.unlikeBoard(memberId);
+        CommonResponseDto<?> responseDto = likeService.unlikeMember(memberId);
         return new ResponseEntity<>(responseDto, responseDto.getStatus().getHttpStatus());
     }
 }

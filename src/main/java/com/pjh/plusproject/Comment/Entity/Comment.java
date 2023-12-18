@@ -35,6 +35,7 @@ public class Comment extends BaseEntity {
 
     public CommentResponseDTO showResponseDTO(Comment comment){
         return CommentResponseDTO.builder()
+                .commentId(comment.getId())
                 .writer(comment.getMember().getUsername())
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())

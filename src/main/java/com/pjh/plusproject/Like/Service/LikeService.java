@@ -12,9 +12,7 @@ import com.pjh.plusproject.Member.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.HashSet;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,23 +24,28 @@ public class LikeService {
     public CommonResponseDto<?> likeBoard(long boardId) {
         // NoSuchElementException
         Board board = boardRepository.findById(boardId).orElseThrow();
+
+        // 자기 자신이? 좋아요를 누르면?
+        // 로그인 멤버의 네임를 가져옴
+        String loginMemberName = getLoginMemberName();
+        if(loginMemberName.equals(board.getMember().getUsername())){
+            // 로그인한 사용자와 게시글의 사용자를 좋아요 할 수 없게 만드는 로직
+            throw new IllegalArgumentException("자신이 작성한 게시글에 '좋아요'를 누를 수 없습니다.");
+        }
+
+        // 똑같은 게시글에 계속 '좋아요'를 누르면?
+        // likeRepository.existsByBoardIdAndToMemberId(boardId, board.getMember().getId()).orElseThrow();
+        boolean hasLiked = likeRepository.existsByBoardIdAndFromMemberId(boardId, board.getMember().getId());
+        if (hasLiked) {
+            throw new IllegalArgumentException("해당 멤버는 '좋아요'를 누른 게시글입니다.");
+        }
+
         Like like = Like.builder()
                 .board(board)
                 .fromMember(board.getMember())
                 .build();
-        HashMap<String, Integer> set = new HashMap<>();
-
         likeRepository.save(like);
 
-        // 로그인 멤버의 네임를 가져옴
-        String loginMemberName = getLoginMemberName();
-
-        /*
-        private String toMemberName;
-        private String fromMemberName;
-        private String boardTitle;
-        private String boardDescription;
-        */
         LikeResponseDTO responseDTO = LikeResponseDTO.builder()
                 .toMemberName(board.getMember().getUsername())
                 .fromMemberName(loginMemberName)
@@ -53,8 +56,16 @@ public class LikeService {
         return new CommonResponseDto<>("게시글 좋아요 성공", HttpStatusCode.OK, responseDTO);
     }
 
+    @Transactional
     public CommonResponseDto<?> unlikeBoard(long boardId) {
-        boardRepository.findById(boardId).orElseThrow();
+        // boardId 찾기
+        Board board = boardRepository.findById(boardId).orElseThrow();
+        // likeRepository에 해당하는 boardId 존재하는지 확인
+        // 있으면 삭제 비지니스 로직 수행, 없으면 삭제 비지니스가 아닌 예외처리로
+        boolean hasLiked = likeRepository.existsByBoardIdAndFromMemberId(boardId, board.getMember().getId());
+        if(!hasLiked){
+            throw new IllegalArgumentException("해당 멤버는 해당 게시글에 대한 '좋아요'를 누르지 않았습니다.");
+        }
         likeRepository.deleteByBoardId(boardId);
         return new CommonResponseDto<>("게시글 좋아요 취소 성공", HttpStatusCode.OK, null);
     }
@@ -64,6 +75,12 @@ public class LikeService {
         Member toMember = memberRepository.findById(memberId).orElseThrow();
         String fromMemberName = getLoginMemberName();
         Member fromMember = memberRepository.findByUsername(fromMemberName).orElseThrow();
+
+        boolean hasLiked = likeRepository.existsByToMemberIdAndFromMemberId(fromMember.getId(), toMember.getId());
+        if (hasLiked) {
+            throw new IllegalArgumentException("해당 멤버는 '좋아요'를 누른 멤버입니다.");
+        }
+
         // like entity 저장
         Like like = Like.builder()
                 .fromMember(fromMember)
@@ -79,9 +96,16 @@ public class LikeService {
         return new CommonResponseDto<>("멤버 좋아요 성공", HttpStatusCode.OK, likeResponseDTO);
     }
 
+    @Transactional
     public CommonResponseDto<?> unlikeMember(long memberId){
-        memberRepository.findById(memberId).orElseThrow();
-        likeRepository.deleteByMemberId(memberId);
+        Member toMember = memberRepository.findById(memberId).orElseThrow();
+        Member fromMember = memberRepository.findByUsername(getLoginMemberName()).orElseThrow();
+        boolean hasLiked = likeRepository.existsByToMemberIdAndFromMemberId(fromMember.getId(), toMember.getId());
+        if (!hasLiked) {
+            throw new IllegalArgumentException("해당 멤버는 '좋아요'를 누르지 않은 멤버입니다.");
+        }
+
+        likeRepository.deleteByToMemberId(memberId);
         return new CommonResponseDto<>("멤버 좋아요 취소 성공", HttpStatusCode.OK, null);
     }
 
