@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,7 +61,6 @@ public class BoardService {
 
         }catch (IOException e){
             e.printStackTrace();
-            return new CommonResponseDto<>(e.getMessage(), HttpStatusCode.INTERNAL_SERVER_ERROR, new Date());
         }
 
         Board boardEntity = Board.builder()
@@ -146,7 +146,10 @@ public class BoardService {
     @Transactional
     public CommonResponseDto<?> updateBoard(long boardId, BoardRequestDTO boardRequestDTO, MemberDetailsImpl memberDetails){
         Board board = boardRepository.findById(boardId).orElseThrow();
-        Member member = memberRepository.findById(memberDetails.getMember().getId()).orElseThrow();
+        if(getLoignMemberName().equals(board.getMember().getUsername())){
+            throw new IllegalArgumentException("해당 멤버는 해당 게시글 수정을 할 수 없습니다.");
+        }
+        memberRepository.findById(memberDetails.getMember().getId()).orElseThrow();
         board.update(boardRequestDTO);
         BoardResponseDTO responseDTO = board.showUpdateBoard(board);
         boardRepository.save(board);
@@ -157,6 +160,9 @@ public class BoardService {
     public CommonResponseDto<?> deleteBoard(long boardId) {
         // 해당 메서드는 WebSecurityConfig에서 인증된 사용자가 아니면 접근을 못함.
         Board board = boardRepository.findById(boardId).orElseThrow();
+        if(getLoignMemberName().equals(board.getMember().getUsername())){
+            throw new IllegalArgumentException("해당 멤버는 해당 게시글 삭제를 할 수 없습니다.");
+        }
         // deleteById또한 내부 @Transactional 존재하여 안적어도 됨
         boardRepository.deleteById(boardId);
         return new CommonResponseDto<>("게시글 삭제 성공", HttpStatusCode.OK, null);
@@ -165,5 +171,9 @@ public class BoardService {
     @Transactional(readOnly = true)
     public List<Board> findBoardCreatedBefore90Days(LocalDateTime ninetyDaysAgo){
         return boardRepository.findByCreatedAtBefore(ninetyDaysAgo);
+    }
+
+    private String getLoignMemberName(){
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }

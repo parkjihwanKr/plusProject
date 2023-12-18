@@ -24,11 +24,11 @@ public class MemberService {
         Member duplicateUsernameMember = memberRepository.findByUsername(signupDTO.getUsername()).orElse(null);
         // 해당하는 username이 중복될 때는?
         if(duplicateUsernameMember != null){
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("중복되는 멤버 네임으로 작성하셨습니다. 다시 시도 해주세요.");
         }
-        Member duplicateEmailMember = memberRepository.findByEmail(signupDTO.getUsername()).orElse(null);
+        Member duplicateEmailMember = memberRepository.findByEmail(signupDTO.getEmail()).orElse(null);
         if(duplicateEmailMember != null){
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("중복되는 멤버 이메일로 작성하셨습니다. 다시 시도 해주세요.");
         }
         // (챌린지 과제) 데이터베이스에 비밀번호를 평문으로 저장하는 것이 아닌, 단방향 암호화 알고리즘을 이용하여 암호화 해서 저장하도록 하기
         String bcrytPassword = passwordEncoder.encode(signupDTO.getPassword());
