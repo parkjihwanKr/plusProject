@@ -20,6 +20,7 @@ spring:
   mail:
     username: ${your_naver_name}
     password: ${your_naver_password}
+
 jwt:
   secret:
     key: ${jwt.secret.key}

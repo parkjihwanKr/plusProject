@@ -39,7 +39,8 @@ public class Board extends BaseEntity {
     private Member member;
 
     // 모든 변경 작업에 cascade 실행
-    // 댓글이 게시글과 연관이 되어있지 않으면 삭제
+    // 라이프사이클이 부모인 Board와 Comment가 동일해짐,
+    // 즉 게시글 삭제 시, Comment 또한 삭제
     // on delete cascade
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments = new LinkedHashSet<>();
