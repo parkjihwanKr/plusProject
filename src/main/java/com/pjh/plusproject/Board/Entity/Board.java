@@ -56,9 +56,10 @@ public class Board extends BaseEntity {
                 .build();
     }
 
-    public void update(BoardRequestDTO boardRequestDTO) {
+    public void update(BoardRequestDTO boardRequestDTO, String imageUrl) {
         this.title = boardRequestDTO.getTitle();
         this.description = boardRequestDTO.getDescription();
+        this.imageUrl = imageUrl;
     }
 
     public BoardResponseDTO showUpdateBoard(Board board){

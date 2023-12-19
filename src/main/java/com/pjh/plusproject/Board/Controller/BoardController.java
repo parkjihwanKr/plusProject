@@ -57,10 +57,11 @@ public class BoardController {
 
     @PutMapping("/board/{boardId}")
     public ResponseEntity<CommonResponseDto<?>> updateBoard(
+            @RequestParam("file")MultipartFile multipartFile,
             @PathVariable long boardId,
-            @Valid @RequestBody BoardRequestDTO requestDTO,
-            @AuthenticationPrincipal MemberDetailsImpl memberDetails){
-        CommonResponseDto<?> responseDto = boardService.updateBoard(boardId, requestDTO, memberDetails);
+            @Valid BoardRequestDTO requestDTO,
+            @AuthenticationPrincipal MemberDetailsImpl memberDetails) throws IOException{
+        CommonResponseDto<?> responseDto = boardService.updateBoard(multipartFile, boardId, requestDTO, memberDetails);
         return new ResponseEntity<>(responseDto,responseDto.getStatus().getHttpStatus());
     }
 

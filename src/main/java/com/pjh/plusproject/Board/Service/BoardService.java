@@ -19,8 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.HandlerMapping;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -45,7 +43,7 @@ public class BoardService {
     public CommonResponseDto<?> createBoard(
             MultipartFile image,
             BoardRequestDTO requestDTO,
-            MemberDetailsImpl memberDetails){
+            MemberDetailsImpl memberDetails) throws IOException{
         String uuidImageName = null;
 
         try {
@@ -61,6 +59,7 @@ public class BoardService {
 
         }catch (IOException e){
             e.printStackTrace();
+            throw new IOException("해당 이미지 파일은 잘못된 형식입니다.");
         }
 
         Board boardEntity = Board.builder()
@@ -110,8 +109,8 @@ public class BoardService {
         List<Board> memberBoard = boardRepository.findAllByMemberId(memberId);
 
         if(memberBoard == null){
-            // 조회는 성공 했기 때문에 statusCode를 400으로 돌려줄 순 없음.
-            throw new NoSuchElementException();
+            // 조회는 성공 했기 때문에 statusCode를 200으로 돌려줄 순 없음.
+            throw new NoSuchElementException("해당 멤버의 게시글이 존재하지 않습니다.");
         }else{
             // member가 존재하면
             // 해당 사항은 title, description, createAt만 보여 줘도 됨
@@ -134,24 +133,47 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public CommonResponseDto<BoardResponseDTO> showBoard(long boardId) {
-        Board board = boardRepository.findById(boardId).orElse(null);
-        if(board == null){
-            //return new CommonResponseDto<>("해당 게시글은 존재하지 않습니다.", 400, null);
-        }
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                ()-> new NoSuchElementException("해당 게시글은 존재하지 않습니다.")
+        );
         BoardResponseDTO responseDTO = board.showBoard(board);
 
         return new CommonResponseDto<>("해당 게시글 조회 성공", HttpStatusCode.OK, responseDTO);
     }
 
     @Transactional
-    public CommonResponseDto<?> updateBoard(long boardId, BoardRequestDTO boardRequestDTO, MemberDetailsImpl memberDetails){
+    public CommonResponseDto<?> updateBoard(
+            MultipartFile image,
+            long boardId,
+            BoardRequestDTO boardRequestDTO,
+            MemberDetailsImpl memberDetails) throws IOException{
+        // updateBoard 비지니스 로직 수정하기
         Board board = boardRepository.findById(boardId).orElseThrow();
-        if(getLoignMemberName().equals(board.getMember().getUsername())){
+        if(!getLoignMemberName().equals(board.getMember().getUsername())){
             throw new IllegalArgumentException("해당 멤버는 해당 게시글 수정을 할 수 없습니다.");
         }
+
+        String uuidImageName = null;
+
+        try {
+            String uuid = UUID.randomUUID().toString();
+            String originalImageName = image.getOriginalFilename();
+
+            uuidImageName = uuid+"_"+originalImageName;
+
+            ObjectMetadata metaData = new ObjectMetadata();
+            metaData.setContentType(image.getContentType());
+        metaData.setContentLength(image.getSize());
+        amazonS3.putObject(bucket, uuidImageName, image.getInputStream(), metaData);
+
+    }catch (IOException e){
+        e.printStackTrace();
+        throw new IOException("해당 이미지 파일은 잘못된 형식입니다.");
+    }
+
         memberRepository.findById(memberDetails.getMember().getId()).orElseThrow();
-        board.update(boardRequestDTO);
-        BoardResponseDTO responseDTO = board.showUpdateBoard(board);
+        board.update(boardRequestDTO, uuidImageName);
+    BoardResponseDTO responseDTO = board.showUpdateBoard(board);
         boardRepository.save(board);
         return new CommonResponseDto<>("해당 게시글 수정 성공", HttpStatusCode.OK, responseDTO);
     }
