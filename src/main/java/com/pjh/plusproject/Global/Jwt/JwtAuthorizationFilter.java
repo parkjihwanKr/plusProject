@@ -29,7 +29,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         this.memberDetailsService = memberDetailsService;
     }
 
-    @Override
+    /*@Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
         log.info("doFilterInternal()");
         String tokenValue = jwtProvider.getJwtFromHeader(req);
@@ -49,6 +49,25 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
         }
         Set<Integer> hasSet = new HashSet<>();
+        filterChain.doFilter(req, res);
+    }*/
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest req,
+            HttpServletResponse res,
+            FilterChain filterChain) throws IOException, ServletException{
+        String header = jwtProvider.getAccessTokenHeader();
+        String tokenValue = jwtProvider.getTokenFromCookie(header, req);
+
+        if(StringUtils.hasText(tokenValue) && jwtProvider.validateToken(tokenValue)){
+            Claims info = jwtProvider.getUserInfoFromToken(tokenValue);
+            try {
+                setAuthentication(info.getSubject());
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                return;
+            }
+        }
         filterChain.doFilter(req, res);
     }
 

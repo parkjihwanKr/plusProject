@@ -1,6 +1,7 @@
 package com.pjh.plusproject.Global.Jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pjh.plusproject.Global.DTO.TokenDTO;
 import com.pjh.plusproject.Global.Security.MemberDetailsImpl;
 import com.pjh.plusproject.Member.DTO.LoginDTO;
 import com.pjh.plusproject.Member.Entity.MemberRoleEnum;
@@ -50,10 +51,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String username = ((MemberDetailsImpl) authResult.getPrincipal()).getUsername();
         MemberRoleEnum role = ((MemberDetailsImpl) authResult.getPrincipal()).getMember().getRole();
 
-        String token = jwtProvider.createToken(username, role);
-        log.info(token);
-        // 토큰 요청할 때 잘못 보내는거 같음,
-        response.setHeader(JwtProvider.AUTHORIZATION_HEADER, token);
+        TokenDTO token = jwtProvider.createToken(username, role);
+        response.setHeader(JwtProvider.AUTHORIZATION_HEADER, token.getAccessToken());
+        response.setHeader(JwtProvider.REFRESH_TOKEN_HEADER, token.getRefreshToken());
         // response.setHeader(); 없을 때 넣어주는데, 중복된 토큰이 있으면 업데이트 해준다.
     }
 
