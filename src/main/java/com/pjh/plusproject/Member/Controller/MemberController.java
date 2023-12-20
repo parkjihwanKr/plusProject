@@ -1,6 +1,7 @@
 package com.pjh.plusproject.Member.Controller;
 
 import com.pjh.plusproject.Global.Common.CommonResponseDto;
+import com.pjh.plusproject.Member.DTO.LoginDTO;
 import com.pjh.plusproject.Member.DTO.SignupDTO;
 import com.pjh.plusproject.Member.Service.MemberService;
 import jakarta.validation.Valid;
@@ -25,14 +26,15 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public ResponseEntity<CommonResponseDto<?>> signup(@Valid SignupDTO requestDto){
-        CommonResponseDto<?> commonResponseDto = memberService.signup(requestDto);
+    public ResponseEntity<CommonResponseDto<?>> signup(@Valid SignupDTO signupDto){
+        CommonResponseDto<?> commonResponseDto = memberService.signup(signupDto);
         return new ResponseEntity<>(commonResponseDto, commonResponseDto.getStatus().getHttpStatus());
         // SignupDto 제약 조건 확인
     }
 
-    // 로그인 버튼을 누른 경우 닉네임과 비밀번호가 데이터베이스에 등록됐는지 확인한 뒤,
-    // 하나라도 맞지 않는 정보가 있다면 "닉네임 또는 패스워드를 확인해주세요."
-    // 라는 에러 메세지를 response에 포함하기
-    // 이 조건 때문에 controller에 적을지? 아니면 webSecurityConfig에서 처리를 할지?
+    /*@PostMapping("/login")
+    public ResponseEntity<CommonResponseDto<?>> login(LoginDTO loginDTO){
+        CommonResponseDto<?> commonResponseDto = memberService.login(loginDTO);
+        return new ResponseEntity<>(commonResponseDto, commonResponseDto.getStatus().getHttpStatus());
+    }*/
 }

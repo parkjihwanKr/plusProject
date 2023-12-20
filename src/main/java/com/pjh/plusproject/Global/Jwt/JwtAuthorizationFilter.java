@@ -30,35 +30,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     /*@Override
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
-        log.info("doFilterInternal()");
-        String tokenValue = jwtProvider.getJwtFromHeader(req);
-        log.info("tokenValue : "+tokenValue);
-        // 여기 null
-        if (StringUtils.hasText(tokenValue)) {
-            if (!jwtProvider.validateToken(tokenValue)) {
-                log.error("Token Error");
-                return;
-            }
-            Claims info = jwtProvider.getUserInfoFromToken(tokenValue);
-            try {
-                setAuthentication(info.getSubject());
-            } catch (Exception e) {
-                log.error(e.getMessage());
-                return;
-            }
-        }
-        Set<Integer> hasSet = new HashSet<>();
-        filterChain.doFilter(req, res);
-    }*/
-
-    @Override
     protected void doFilterInternal(HttpServletRequest req,
             HttpServletResponse res,
             FilterChain filterChain) throws IOException, ServletException{
         String header = jwtProvider.getAccessTokenHeader();
+        log.info("accessTokenHeader : "+header);
         String tokenValue = jwtProvider.getTokenFromCookie(header, req);
-
+        log.info("tokenValue : "+tokenValue);
         if(StringUtils.hasText(tokenValue) && jwtProvider.validateToken(tokenValue)){
             Claims info = jwtProvider.getUserInfoFromToken(tokenValue);
             try {
@@ -69,7 +47,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(req, res);
-    }
+    }*/
 
     // 인증 처리
     public void setAuthentication(String username) {
@@ -89,5 +67,27 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         log.info("createAuthentication()");
         UserDetails userDetails = memberDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    }
+    // 안될 수도 있어서 일단은 가지고 있기
+    @Override
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
+        log.info("doFilterInternal()");
+        String tokenValue = jwtProvider.getJwtFromHeader(req);
+        log.info("tokenValue : "+tokenValue);
+        // 여기 null
+        if (StringUtils.hasText(tokenValue)) {
+            if (!jwtProvider.validateToken(tokenValue)) {
+                log.error("Token Error");
+                return;
+            }
+            Claims info = jwtProvider.getUserInfoFromToken(tokenValue);
+            try {
+                setAuthentication(info.getSubject());
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                return;
+            }
+        }
+        filterChain.doFilter(req, res);
     }
 }

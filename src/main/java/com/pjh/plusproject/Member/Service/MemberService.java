@@ -2,13 +2,19 @@ package com.pjh.plusproject.Member.Service;
 
 import com.pjh.plusproject.Global.Common.CommonResponseDto;
 import com.pjh.plusproject.Global.Exception.HttpStatusCode;
+import com.pjh.plusproject.Global.Jwt.JwtProvider;
+import com.pjh.plusproject.Global.Security.MemberDetailsImpl;
+import com.pjh.plusproject.Member.DTO.LoginDTO;
 import com.pjh.plusproject.Member.DTO.SignupDTO;
 import com.pjh.plusproject.Member.Entity.Member;
 import com.pjh.plusproject.Member.Entity.MemberRoleEnum;
 import com.pjh.plusproject.Member.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
@@ -17,6 +23,7 @@ import java.util.NoSuchElementException;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+
     public CommonResponseDto<?> signup(SignupDTO signupDTO) {
         // 지금 해당하는 Member에 안 들어가는 이유는 당연히, username의 중복성을 물어보는 것이기에
         // NoSuchElementException이 터지는게 맞네?
@@ -42,4 +49,16 @@ public class MemberService {
         memberRepository.save(member);
         return new CommonResponseDto<>("회원 가입에 성공하셨습니다.", HttpStatusCode.CREATED);
     }
+
+    /*@Transactional
+    public CommonResponseDto<?> login(LoginDTO loginDTO) {
+        Member memberEntity = memberRepository.findByUsername(loginDTO.getUsername()).orElseThrow();
+        Authentication authentication = createAuthentication(memberEntity);
+        return new CommonResponseDto<>("로그인에 성공하셨습니다.", HttpStatusCode.OK);
+    }
+
+    private Authentication createAuthentication(Member member){
+        MemberDetailsImpl memberDetails = new MemberDetailsImpl(member);
+        return new UsernamePasswordAuthenticationToken(memberDetails, member.getPassword(), memberDetails.getAuthorities());
+    }*/
 }

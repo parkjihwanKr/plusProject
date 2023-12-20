@@ -96,6 +96,7 @@ public class JwtProvider {
     }
 
     public boolean validateToken(String token) {
+        log.info("token : "+ token);
         try {
             log.info("validateToken");
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -143,11 +144,11 @@ public class JwtProvider {
         return AUTHORIZATION_HEADER;
     }
 
-    /*public String getJwtFromHeader(HttpServletRequest req){
+    public String getJwtFromHeader(HttpServletRequest req){
         String bearerToken = req.getHeader(AUTHORIZATION_HEADER);
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)){
             return bearerToken.substring(7);
         }
         return null;
-    }*/
+    }
 }
