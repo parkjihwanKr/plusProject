@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -166,14 +167,14 @@ public class BoardService {
         metaData.setContentLength(image.getSize());
         amazonS3.putObject(bucket, uuidImageName, image.getInputStream(), metaData);
 
-    }catch (IOException e){
-        e.printStackTrace();
-        throw new IOException("해당 이미지 파일은 잘못된 형식입니다.");
-    }
+        }catch (IOException e){
+            e.printStackTrace();
+            throw new IOException("해당 이미지 파일은 잘못된 형식입니다.");
+        }
 
         memberRepository.findById(memberDetails.getMember().getId()).orElseThrow();
         board.update(boardRequestDTO, uuidImageName);
-    BoardResponseDTO responseDTO = board.showUpdateBoard(board);
+        BoardResponseDTO responseDTO = board.showUpdateBoard(board);
         boardRepository.save(board);
         return new CommonResponseDto<>("해당 게시글 수정 성공", HttpStatusCode.OK, responseDTO);
     }
@@ -195,7 +196,7 @@ public class BoardService {
         return boardRepository.findByCreatedAtBefore(ninetyDaysAgo);
     }
 
-    private String getLoignMemberName(){
+    protected String getLoignMemberName(){
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }

@@ -1,14 +1,12 @@
 package com.pjh.plusproject.Global.Exception;
 
-import io.jsonwebtoken.io.IOException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
