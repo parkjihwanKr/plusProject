@@ -20,11 +20,15 @@ spring:
   mail:
     username: ${your_naver_name}
     password: ${your_naver_password}
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 jwt:
-  secret:
-    key: ${jwt.secret.key}
-
+  access-token-expiration: 86400000  # 1시간
+  refresh-token-expiration: 8467200000 # 14일
+  secret_key: ${jwt.secret_key}
 cloud:
   aws:
     s3:
