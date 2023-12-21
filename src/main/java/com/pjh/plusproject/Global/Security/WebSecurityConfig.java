@@ -56,12 +56,13 @@ public class WebSecurityConfig {
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/api/v1/signup").permitAll()
+                        .requestMatchers("/api/v1/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/member/board/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/board/**").permitAll()
                         .anyRequest().authenticated()
         );
 
-        http.formLogin((formLogin) ->
+        /*http.formLogin((formLogin) ->
                         formLogin
                                 .loginPage("/api/v1/loginPage").permitAll()
                                 .defaultSuccessUrl("/api/v1/homePage")
@@ -72,7 +73,7 @@ public class WebSecurityConfig {
                         .logoutSuccessUrl("/api/v1/loginPage")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-        );
+        );*/
 
         // 필터 관리
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);

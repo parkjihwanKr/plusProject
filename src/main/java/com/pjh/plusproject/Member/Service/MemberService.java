@@ -1,17 +1,23 @@
 package com.pjh.plusproject.Member.Service;
 
 import com.pjh.plusproject.Global.Common.CommonResponseDto;
+import com.pjh.plusproject.Global.DTO.TokenDTO;
 import com.pjh.plusproject.Global.Exception.HttpStatusCode;
 import com.pjh.plusproject.Global.Jwt.JwtProvider;
+import com.pjh.plusproject.Global.Jwt.RedisProvider;
 import com.pjh.plusproject.Global.Security.MemberDetailsImpl;
 import com.pjh.plusproject.Member.DTO.LoginDTO;
 import com.pjh.plusproject.Member.DTO.SignupDTO;
 import com.pjh.plusproject.Member.Entity.Member;
 import com.pjh.plusproject.Member.Entity.MemberRoleEnum;
 import com.pjh.plusproject.Member.Repository.MemberRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,11 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.NoSuchElementException;
 
 @Service
+@Slf4j(topic = "MemberService")
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final JwtProvider jwtProvider;
+    private final RedisProvider redisProvider;
     public CommonResponseDto<?> signup(SignupDTO signupDTO) {
         // 지금 해당하는 Member에 안 들어가는 이유는 당연히, username의 중복성을 물어보는 것이기에
         // NoSuchElementException이 터지는게 맞네?
@@ -50,15 +58,38 @@ public class MemberService {
         return new CommonResponseDto<>("회원 가입에 성공하셨습니다.", HttpStatusCode.CREATED);
     }
 
-    /*@Transactional
-    public CommonResponseDto<?> login(LoginDTO loginDTO) {
+    @Transactional
+    public CommonResponseDto<?> login(LoginDTO loginDTO, HttpServletResponse res) {
         Member memberEntity = memberRepository.findByUsername(loginDTO.getUsername()).orElseThrow();
+        // 인증 객체 생성
         Authentication authentication = createAuthentication(memberEntity);
+        setAuthentication(authentication);
+
+        // login시에 token을 만들어서 넣어줌
+        TokenDTO tokenDTO = jwtProvider.createToken(memberEntity.getUsername(), memberEntity.getRole());
+        // 이미 여기서 tokenValue만 남는데?
+        log.info("accessToken : "+tokenDTO.getAccessToken());
+        log.info("refreshToken : "+tokenDTO.getRefreshToken());
+
+        // 쿠키를 넣어주고 Header에 accessToken과 refreshToken을 넣어줌
+        jwtProvider.setTokenForCookie(tokenDTO, res);
+        res.addHeader(jwtProvider.getAuthorizationHeader(), tokenDTO.getAccessToken());
+        res.addHeader(jwtProvider.getRefreshTokenHeader(), tokenDTO.getRefreshToken());
+
+        // redis에 refershToken 저장하는 로직
+        String key = "refreshToken : "+ memberEntity.getUsername();
+        redisProvider.saveKey(key, Math.toIntExact(jwtProvider.getRefreshTokenExpiration() / 1000),tokenDTO.getRefreshToken());
+
         return new CommonResponseDto<>("로그인에 성공하셨습니다.", HttpStatusCode.OK);
     }
 
     private Authentication createAuthentication(Member member){
         MemberDetailsImpl memberDetails = new MemberDetailsImpl(member);
         return new UsernamePasswordAuthenticationToken(memberDetails, member.getPassword(), memberDetails.getAuthorities());
-    }*/
+    }
+
+    private void setAuthentication(Authentication authentication){
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        securityContext.setAuthentication(authentication);
+    }
 }

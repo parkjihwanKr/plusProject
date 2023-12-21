@@ -20,7 +20,7 @@ public class RedisProvider {
         this.objectMapper = objectMapper;
     }
 
-    public <T> void save(String key, Integer minutes, T value){
+    public <T> void saveKey(String key, Integer minutes, T value){
         String valueString = null;
         try{
             valueString = !(value instanceof String) ? objectMapper.writeValueAsString(value) : (String) value;

@@ -4,6 +4,7 @@ import com.pjh.plusproject.Global.Common.CommonResponseDto;
 import com.pjh.plusproject.Member.DTO.LoginDTO;
 import com.pjh.plusproject.Member.DTO.SignupDTO;
 import com.pjh.plusproject.Member.Service.MemberService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +33,9 @@ public class MemberController {
         // SignupDto 제약 조건 확인
     }
 
-    /*@PostMapping("/login")
-    public ResponseEntity<CommonResponseDto<?>> login(LoginDTO loginDTO){
-        CommonResponseDto<?> commonResponseDto = memberService.login(loginDTO);
+    @PostMapping("/login")
+    public ResponseEntity<CommonResponseDto<?>> login(@Valid @RequestBody LoginDTO loginDTO, HttpServletResponse res){
+        CommonResponseDto<?> commonResponseDto = memberService.login(loginDTO, res);
         return new ResponseEntity<>(commonResponseDto, commonResponseDto.getStatus().getHttpStatus());
-    }*/
+    }
 }

@@ -33,9 +33,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req,
             HttpServletResponse res,
             FilterChain filterChain) throws IOException, ServletException{
-        String header = jwtProvider.getAccessTokenHeader();
+        // "Authorization"
+        String header = jwtProvider.getAuthorizationHeader();
+
+        String testTokenValue = jwtProvider.getJwtFromHeader(req);
+        // login 진행 당시에도 null이 맞음
         log.info("accessTokenHeader : "+header);
         String tokenValue = jwtProvider.getTokenFromCookie(header, req);
+        // login 진행 때도 null이 아니라 tokenValue를 가져오는게 문제
+        log.info("test token value : "+ testTokenValue);
         log.info("tokenValue : "+tokenValue);
         if(StringUtils.hasText(tokenValue) && jwtProvider.validateToken(tokenValue)){
             Claims info = jwtProvider.getUserInfoFromToken(tokenValue);

@@ -22,9 +22,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public JwtAuthenticationFilter(JwtProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
-        setFilterProcessesUrl("/api/v1/login");
+        // webSecurityConfig에서 잡아서 filter에서 login 처리하던 것을 변경
+        // setFilterProcessesUrl("/api/v1/login");
     }
 
+    // 지금 MemberController에서 잡아서 처리하기에 AuthenticationFilter가 필요가 없음
+    // 밑에 존재하는 successfulAuthenitcation 안씀.
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         log.info("attemptAuthentication()");

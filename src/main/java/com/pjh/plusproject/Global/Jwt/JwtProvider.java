@@ -8,21 +8,20 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import jakarta.servlet.http.Cookie;
 
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 
+@Getter
 @Slf4j
 @Component
 public class JwtProvider {
@@ -75,16 +74,13 @@ public class JwtProvider {
         return TokenDTO.of(accessToken, refreshToken);
     }
 
-    /*public void setTokenForCookie(TokenDTO tokenDTO, HttpServletResponse respnose){
+    public void setTokenForCookie(TokenDTO tokenDTO, HttpServletResponse respnose){
         String accessToken = URLEncoder.encode(BEARER_PREFIX + tokenDTO.getAccessToken(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
         String refreshToken = URLEncoder.encode(BEARER_PREFIX + tokenDTO.getRefreshToken(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
 
-        Cookie accessTokenCookie = makeTokenCookie(AUTHORIZATION_HEADER, accessToken);
-        Cookie refreshTokenCookie = makeTokenCookie(AUTHORIZATION_HEADER, refreshToken);
-
-        respnose.addCookie(accessTokenCookie);
-        respnose.addCookie(refreshTokenCookie);
-    }*/
+        makeTokenCookie(AUTHORIZATION_HEADER, accessToken);
+        makeTokenCookie(REFRESH_TOKEN_HEADER, refreshToken);
+    }
 
     private Cookie makeTokenCookie(String header, String value){
         Cookie cookie = new Cookie(header, value);
@@ -113,7 +109,7 @@ public class JwtProvider {
         return false;
     }
 
-    public String getTokenFromCookie(String header, HttpServletRequest request){
+    /*public String getTokenFromCookie(String header, HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
         if(cookies == null){
             return null;
@@ -124,9 +120,10 @@ public class JwtProvider {
                 .map(cookie-> URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8))
                 .map(this::substringToken)
                 .orElse("");
-    }
+    }*/
 
     private String substringToken(String tokenValue) {
+        log.info("tokenValue : "+tokenValue);
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
             return tokenValue.substring(7);
         }
@@ -134,14 +131,11 @@ public class JwtProvider {
         log.error("Can not Substring Token Value");
         throw new IllegalArgumentException();
     }
+
     // JWT 사용자 정보를 가져오기
     public Claims getUserInfoFromToken(String token) {
         log.info("getUserInfoFromToken");
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-    }
-
-    public String getAccessTokenHeader() {
-        return AUTHORIZATION_HEADER;
     }
 
     public String getJwtFromHeader(HttpServletRequest req){
@@ -150,5 +144,13 @@ public class JwtProvider {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    public String getAuthorizationHeader(){
+        return AUTHORIZATION_HEADER;
+    }
+
+    public String getRefreshTokenHeader(){
+        return REFRESH_TOKEN_HEADER;
     }
 }
