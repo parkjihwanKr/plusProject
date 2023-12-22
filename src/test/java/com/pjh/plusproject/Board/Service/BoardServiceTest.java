@@ -148,7 +148,7 @@ public class BoardServiceTest {
         CommonResponseDto<?> response = boardService.showAllBoardList(pageable);
 
         // then
-        assertEquals("모든 게시글 조회", response.getMessage());
+        assertEquals("모든 게시글 조회 성공", response.getMessage());
         assertEquals(HttpStatus.OK, response.getStatus().getHttpStatus());
     }
 

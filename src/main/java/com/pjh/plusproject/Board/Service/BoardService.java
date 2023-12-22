@@ -8,6 +8,7 @@ import com.pjh.plusproject.Board.Entity.Board;
 import com.pjh.plusproject.Board.Repository.BoardRepository;
 import com.pjh.plusproject.Global.Common.CommonResponseDto;
 import com.pjh.plusproject.Global.Exception.HttpStatusCode;
+import com.pjh.plusproject.Global.Exception.UnauthorizatedAccessException;
 import com.pjh.plusproject.Global.Security.MemberDetailsImpl;
 import com.pjh.plusproject.Member.Entity.Member;
 import com.pjh.plusproject.Member.Repository.MemberRepository;
@@ -151,7 +152,7 @@ public class BoardService {
         // updateBoard 비지니스 로직 수정하기
         Board board = boardRepository.findById(boardId).orElseThrow();
         if(!getLoignMemberName().equals(board.getMember().getUsername())){
-            throw new IllegalArgumentException("해당 멤버는 해당 게시글 수정을 할 수 없습니다.");
+            throw new UnauthorizatedAccessException("해당 멤버는 해당 게시글 수정을 할 수 없습니다.");
         }
 
         String uuidImageName = null;
@@ -184,7 +185,7 @@ public class BoardService {
         // 해당 메서드는 WebSecurityConfig에서 인증된 사용자가 아니면 접근을 못함.
         Board board = boardRepository.findById(boardId).orElseThrow();
         if(getLoignMemberName().equals(board.getMember().getUsername())){
-            throw new IllegalArgumentException("해당 멤버는 해당 게시글 삭제를 할 수 없습니다.");
+            throw new UnauthorizatedAccessException("해당 멤버는 해당 게시글 삭제를 할 수 없습니다.");
         }
         // deleteById또한 내부 @Transactional 존재하여 안적어도 됨
         boardRepository.deleteById(boardId);

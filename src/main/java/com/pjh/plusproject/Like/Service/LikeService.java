@@ -14,6 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
+
 @Service
 @RequiredArgsConstructor
 public class LikeService {
@@ -23,7 +25,9 @@ public class LikeService {
 
     public CommonResponseDto<?> likeBoard(long boardId) {
         // NoSuchElementException
-        Board board = boardRepository.findById(boardId).orElseThrow();
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                ()-> new NoSuchElementException("해당하는 게시글은 존재하지 않습니다.")
+        );
 
         // 자기 자신이? 좋아요를 누르면?
         // 로그인 멤버의 네임를 가져옴
@@ -34,6 +38,8 @@ public class LikeService {
         }
 
         // 똑같은 게시글에 계속 '좋아요'를 누르면?
+        // deleteById로 같이 작동 시켰어야..?
+        // front에서 작동하는게 더 좋을듯? 싶음, refactoring할꺼라 test code 작성 필요 없을듯?
         // likeRepository.existsByBoardIdAndToMemberId(boardId, board.getMember().getId()).orElseThrow();
         boolean hasLiked = likeRepository.existsByBoardIdAndFromMemberId(boardId, board.getMember().getId());
         if (hasLiked) {
@@ -59,7 +65,9 @@ public class LikeService {
     @Transactional
     public CommonResponseDto<?> unlikeBoard(long boardId) {
         // boardId 찾기
-        Board board = boardRepository.findById(boardId).orElseThrow();
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                ()-> new NoSuchElementException("해당하는 게시글은 존재하지 않습니다.")
+        );
         // likeRepository에 해당하는 boardId 존재하는지 확인
         // 있으면 삭제 비지니스 로직 수행, 없으면 삭제 비지니스가 아닌 예외처리로
         boolean hasLiked = likeRepository.existsByBoardIdAndFromMemberId(boardId, board.getMember().getId());
@@ -70,11 +78,15 @@ public class LikeService {
         return new CommonResponseDto<>("해당 게시글 좋아요 취소 성공", HttpStatusCode.OK, null);
     }
 
-    public CommonResponseDto<?> likeMember(long memberId){
+    public CommonResponseDto<?> likeMember(long toMemberId){
         // '좋아요'를 받는 멤버 존재하지는지?
-        Member toMember = memberRepository.findById(memberId).orElseThrow();
+        Member toMember = memberRepository.findById(toMemberId).orElseThrow(
+                ()-> new NoSuchElementException("해당 좋아요를 하려는 멤버는 존재하지 않습니다.")
+        );
         String fromMemberName = getLoginMemberName();
-        Member fromMember = memberRepository.findByUsername(fromMemberName).orElseThrow();
+        Member fromMember = memberRepository.findByUsername(fromMemberName).orElseThrow(
+                ()-> new NoSuchElementException("해당 멤버는 존재하지 않습니다.")
+        );
 
         boolean hasLiked = likeRepository.existsByToMemberIdAndFromMemberId(fromMember.getId(), toMember.getId());
         if (hasLiked) {
@@ -108,6 +120,7 @@ public class LikeService {
         likeRepository.deleteByToMemberId(memberId);
         return new CommonResponseDto<>("해당 멤버 좋아요 취소 성공", HttpStatusCode.OK, null);
     }
+
 
     private String getLoginMemberName(){
         return SecurityContextHolder.getContext().getAuthentication().getName();
