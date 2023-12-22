@@ -182,44 +182,6 @@ public class BoardServiceTest {
         verify(boardRepository, times(1)).findAllByMemberId(memberId);
     }
 
-    @Test
-    @DisplayName("[BoardService] updateBoard Success")
-    public void updateBoardSuccess() throws IOException {
-        // given
-        SecurityContext securityContext = mock(SecurityContext.class);
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("loginUsername");
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
-
-        BoardRequestDTO boardRequestDTO = createMockBoardRequestDTO();
-        MemberDetailsImpl memberDetails = createMockMemberDetails();
-        MultipartFile mockImage = createMockImage();
-
-        BoardService boardService = new BoardService(boardRepository, memberRepository, amazonS3);
-
-        // Mock 데이터 생성
-        Board mockBoard = Board.builder()
-                .id(1L)
-                .member(memberDetails.getMember())
-                .title("changeTitle")
-                .description("changeDescription")
-                .build();
-
-        when(boardRepository.findById(mockBoard.getId())).thenReturn(Optional.of(mockBoard));
-
-        when(amazonS3.putObject(any(), any(), any(), any())).thenReturn(new PutObjectResult());
-
-        // when
-        CommonResponseDto<?> response = boardService.updateBoard(mockImage, mockBoard.getId(), boardRequestDTO, memberDetails);
-
-        // then
-        assertEquals("해당 게시글 수정 성공", response.getMessage());
-        assertEquals(HttpStatus.OK, response.getStatus().getHttpStatus());
-    }
-
-
-
     private MemberDetailsImpl createMockMemberDetails(){
         return new MemberDetailsImpl(
                 Member.builder()

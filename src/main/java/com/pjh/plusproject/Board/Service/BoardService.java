@@ -101,7 +101,7 @@ public class BoardService {
                                 .build()
                 ).getContent();
 
-        return new CommonResponseDto<>("모든 게시글 조회", HttpStatusCode.OK, responseList);
+        return new CommonResponseDto<>("모든 게시글 조회 성공", HttpStatusCode.OK, responseList);
     }
 
     @Transactional(readOnly = true)
@@ -188,7 +188,7 @@ public class BoardService {
         }
         // deleteById또한 내부 @Transactional 존재하여 안적어도 됨
         boardRepository.deleteById(boardId);
-        return new CommonResponseDto<>("게시글 삭제 성공", HttpStatusCode.OK, null);
+        return new CommonResponseDto<>("해당 게시글 삭제 성공", HttpStatusCode.OK, null);
     }
 
     @Transactional(readOnly = true)

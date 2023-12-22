@@ -53,7 +53,7 @@ public class LikeService {
                 .boardDescription(board.getDescription())
                 .build();
 
-        return new CommonResponseDto<>("게시글 좋아요 성공", HttpStatusCode.OK, responseDTO);
+        return new CommonResponseDto<>("해당 게시글 좋아요 성공", HttpStatusCode.OK, responseDTO);
     }
 
     @Transactional
@@ -67,7 +67,7 @@ public class LikeService {
             throw new IllegalArgumentException("해당 멤버는 해당 게시글에 대한 '좋아요'를 누르지 않았습니다.");
         }
         likeRepository.deleteByBoardId(boardId);
-        return new CommonResponseDto<>("게시글 좋아요 취소 성공", HttpStatusCode.OK, null);
+        return new CommonResponseDto<>("해당 게시글 좋아요 취소 성공", HttpStatusCode.OK, null);
     }
 
     public CommonResponseDto<?> likeMember(long memberId){
@@ -93,7 +93,7 @@ public class LikeService {
                 .toMemberName(toMember.getUsername())
                 .build();
 
-        return new CommonResponseDto<>("멤버 좋아요 성공", HttpStatusCode.OK, likeResponseDTO);
+        return new CommonResponseDto<>("해당 멤버 좋아요 성공", HttpStatusCode.OK, likeResponseDTO);
     }
 
     @Transactional
@@ -106,7 +106,7 @@ public class LikeService {
         }
 
         likeRepository.deleteByToMemberId(memberId);
-        return new CommonResponseDto<>("멤버 좋아요 취소 성공", HttpStatusCode.OK, null);
+        return new CommonResponseDto<>("해당 멤버 좋아요 취소 성공", HttpStatusCode.OK, null);
     }
 
     private String getLoginMemberName(){

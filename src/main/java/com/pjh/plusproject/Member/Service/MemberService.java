@@ -33,9 +33,7 @@ public class MemberService {
     private final JwtProvider jwtProvider;
     private final RedisProvider redisProvider;
     public CommonResponseDto<?> signup(SignupDTO signupDTO) {
-        // 지금 해당하는 Member에 안 들어가는 이유는 당연히, username의 중복성을 물어보는 것이기에
-        // NoSuchElementException이 터지는게 맞네?
-        // 해당하는 username이 중복되는지만 확인하고
+        // 해당하는 username이 중복되는지만 확인
         Member duplicateUsernameMember = memberRepository.findByUsername(signupDTO.getUsername()).orElse(null);
         // 해당하는 username이 중복될 때는?
         if(duplicateUsernameMember != null){
@@ -78,6 +76,7 @@ public class MemberService {
 
         // redis에 refershToken 저장하는 로직
         String key = "refreshToken : "+ memberEntity.getUsername();
+        // redis에는 key-value 형식으로 출력
         redisProvider.saveKey(key, Math.toIntExact(jwtProvider.getRefreshTokenExpiration() / 1000),tokenDTO.getRefreshToken());
 
         return new CommonResponseDto<>("로그인에 성공하셨습니다.", HttpStatusCode.OK);

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -27,9 +28,10 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    // 해당 조회 부분 안 만들었네?
     public CommonResponseDto<?> showBoardAllComment(long boardId) {
-        boardRepository.findById(boardId).orElseThrow();
+        boardRepository.findById(boardId).orElseThrow(
+                ()-> new NoSuchElementException("해당 게시글을 찾을 수 없습니다.")
+        );
         List<Comment> commentList = commentRepository.findByBoardId(boardId);
         List<CommentResponseDTO> responseDTOList = new ArrayList<>();
         for(int i = 0; i<commentList.size(); i++){
@@ -66,7 +68,7 @@ public class CommentService {
         commentRepository.save(comment);
 
         CommentResponseDTO responseDTO = comment.showResponseDTO(comment);
-        return new CommonResponseDto<>("댓글 작성 성공", HttpStatusCode.OK, responseDTO);
+        return new CommonResponseDto<>("해당 게시글 댓글 작성 성공", HttpStatusCode.OK, responseDTO);
     }
 
     public CommonResponseDto<?> updateComment(long commentId, CommentRequestDTO requestDTO) {
@@ -77,13 +79,13 @@ public class CommentService {
         commentRepository.save(comment);
         CommentResponseDTO responseDTO = comment.showResponseDTO(comment);
 
-        return new CommonResponseDto<>("댓글 수정 성공", HttpStatusCode.OK, responseDTO);
+        return new CommonResponseDto<>("해당 게시글 댓글 수정 성공", HttpStatusCode.OK, responseDTO);
     }
 
     public CommonResponseDto<?> deleteComment(long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
         commentRepository.deleteById(commentId);
-        return new CommonResponseDto<>("댓글 삭제 성공", HttpStatusCode.OK, null);
+        return new CommonResponseDto<>("해당 게시글 댓글 삭제 성공", HttpStatusCode.OK, null);
     }
 
     /*

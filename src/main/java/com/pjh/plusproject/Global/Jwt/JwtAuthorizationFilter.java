@@ -28,33 +28,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         this.jwtProvider = jwtProvider;
         this.memberDetailsService = memberDetailsService;
     }
-
-    /*@Override
-    protected void doFilterInternal(HttpServletRequest req,
-            HttpServletResponse res,
-            FilterChain filterChain) throws IOException, ServletException{
-        // "Authorization"
-        String header = jwtProvider.getAuthorizationHeader();
-
-        String testTokenValue = jwtProvider.getJwtFromHeader(req);
-        // login 진행 당시에도 null이 맞음
-        log.info("accessTokenHeader : "+header);
-        String tokenValue = jwtProvider.getTokenFromCookie(header, req);
-        // login 진행 때도 null이 아니라 tokenValue를 가져오는게 문제
-        log.info("test token value : "+ testTokenValue);
-        log.info("tokenValue : "+tokenValue);
-        if(StringUtils.hasText(tokenValue) && jwtProvider.validateToken(tokenValue)){
-            Claims info = jwtProvider.getUserInfoFromToken(tokenValue);
-            try {
-                setAuthentication(info.getSubject());
-            } catch (Exception e) {
-                log.error(e.getMessage());
-                return;
-            }
-        }
-        filterChain.doFilter(req, res);
-    }*/
-
     // 인증 처리
     public void setAuthentication(String username) {
         log.info("setAuthentication()");
