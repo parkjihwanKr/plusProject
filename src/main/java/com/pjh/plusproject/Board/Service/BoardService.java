@@ -6,7 +6,7 @@ import com.pjh.plusproject.Board.DTO.BoardRequestDTO;
 import com.pjh.plusproject.Board.DTO.BoardResponseDTO;
 import com.pjh.plusproject.Board.Entity.Board;
 import com.pjh.plusproject.Board.Repository.BoardRepository;
-import com.pjh.plusproject.Global.Common.CommonResponseDto;
+import com.pjh.plusproject.Global.DTO.CommonResponseDTO;
 import com.pjh.plusproject.Global.Exception.HttpStatusCode;
 import com.pjh.plusproject.Global.Exception.UnauthorizatedAccessException;
 import com.pjh.plusproject.Global.Security.MemberDetailsImpl;
@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +41,7 @@ public class BoardService {
         this.amazonS3 = amazonS3;
     }
 
-    public CommonResponseDto<?> createBoard(
+    public CommonResponseDTO<?> createBoard(
             MultipartFile image,
             BoardRequestDTO requestDTO,
             MemberDetailsImpl memberDetails) throws IOException{
@@ -73,7 +72,7 @@ public class BoardService {
 
         boardRepository.save(boardEntity);
         BoardResponseDTO responseDTO = boardEntity.showBoard(boardEntity);
-        return new CommonResponseDto<>("게시글 작성 성공", HttpStatusCode.CREATED, responseDTO);
+        return new CommonResponseDTO<>("게시글 작성 성공", HttpStatusCode.CREATED, responseDTO);
     }
 
     // Page<BoardResponseDto> reponseList 형태로 repository 접근은 좋지 않음
@@ -85,7 +84,7 @@ public class BoardService {
     // 만약 dto의 변경이 일어나면 dto, controller, service까지만 고치면 됨
     // 만약 DTO가 Persistence layer까지 간다면 코드 변경에 repository의 변경까지 이어짐
     @Transactional(readOnly = true)
-    public CommonResponseDto<?> showAllBoardList(Pageable pageable){
+    public CommonResponseDTO<?> showAllBoardList(Pageable pageable){
         // 커스텀 정렬 페이지
         // 해당 페이지는 list를 3개를 받아오며 id는 오름차순으로 정렬합니다.
         Page<Board> boardPage = boardRepository.showBoardPage(pageable);
@@ -102,11 +101,11 @@ public class BoardService {
                                 .build()
                 ).getContent();
 
-        return new CommonResponseDto<>("모든 게시글 조회 성공", HttpStatusCode.OK, responseList);
+        return new CommonResponseDTO<>("모든 게시글 조회 성공", HttpStatusCode.OK, responseList);
     }
 
     @Transactional(readOnly = true)
-    public CommonResponseDto<?> showMemberBoard(long memberId){
+    public CommonResponseDTO<?> showMemberBoard(long memberId){
         Member member = memberRepository.findById(memberId).orElseThrow();
         List<Board> memberBoard = boardRepository.findAllByMemberId(memberId);
 
@@ -129,22 +128,22 @@ public class BoardService {
                             .build()
                 );
             }
-            return new CommonResponseDto<>("해당 멤버의 모든 게시글 조회 성공", HttpStatusCode.OK, responseDTO);
+            return new CommonResponseDTO<>("해당 멤버의 모든 게시글 조회 성공", HttpStatusCode.OK, responseDTO);
         }
     }
 
     @Transactional(readOnly = true)
-    public CommonResponseDto<BoardResponseDTO> showBoard(long boardId) {
+    public CommonResponseDTO<BoardResponseDTO> showBoard(long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(
                 ()-> new NoSuchElementException("해당 게시글은 존재하지 않습니다.")
         );
         BoardResponseDTO responseDTO = board.showBoard(board);
 
-        return new CommonResponseDto<>("해당 게시글 조회 성공", HttpStatusCode.OK, responseDTO);
+        return new CommonResponseDTO<>("해당 게시글 조회 성공", HttpStatusCode.OK, responseDTO);
     }
 
     @Transactional
-    public CommonResponseDto<?> updateBoard(
+    public CommonResponseDTO<?> updateBoard(
             MultipartFile image,
             long boardId,
             BoardRequestDTO boardRequestDTO,
@@ -177,11 +176,11 @@ public class BoardService {
         board.update(boardRequestDTO, uuidImageName);
         BoardResponseDTO responseDTO = board.showUpdateBoard(board);
         boardRepository.save(board);
-        return new CommonResponseDto<>("해당 게시글 수정 성공", HttpStatusCode.OK, responseDTO);
+        return new CommonResponseDTO<>("해당 게시글 수정 성공", HttpStatusCode.OK, responseDTO);
     }
 
 
-    public CommonResponseDto<?> deleteBoard(long boardId) {
+    public CommonResponseDTO<?> deleteBoard(long boardId) {
         // 해당 메서드는 WebSecurityConfig에서 인증된 사용자가 아니면 접근을 못함.
         Board board = boardRepository.findById(boardId).orElseThrow();
         if(getLoignMemberName().equals(board.getMember().getUsername())){
@@ -189,7 +188,7 @@ public class BoardService {
         }
         // deleteById또한 내부 @Transactional 존재하여 안적어도 됨
         boardRepository.deleteById(boardId);
-        return new CommonResponseDto<>("해당 게시글 삭제 성공", HttpStatusCode.OK, null);
+        return new CommonResponseDTO<>("해당 게시글 삭제 성공", HttpStatusCode.OK, null);
     }
 
     @Transactional(readOnly = true)

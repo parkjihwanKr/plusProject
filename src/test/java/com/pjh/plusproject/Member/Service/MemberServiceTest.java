@@ -1,6 +1,6 @@
 package com.pjh.plusproject.Member.Service;
 
-import com.pjh.plusproject.Global.Common.CommonResponseDto;
+import com.pjh.plusproject.Global.DTO.CommonResponseDTO;
 import com.pjh.plusproject.Member.DTO.SignupDTO;
 import com.pjh.plusproject.Member.Entity.Member;
 import com.pjh.plusproject.Member.Repository.MemberRepository;
@@ -46,7 +46,7 @@ public class MemberServiceTest {
         when(passwordEncoder.encode(signupDTO.getPassword())).thenReturn("encodedPassword");
 
         // when
-        CommonResponseDto<?> response = memberService.signup(signupDTO);
+        CommonResponseDTO<?> response = memberService.signup(signupDTO);
 
         // then
         assertEquals("회원 가입에 성공하셨습니다.", response.getMessage());
@@ -64,7 +64,7 @@ public class MemberServiceTest {
         when(memberRepository.findByEmail(signupDTO1.getEmail())).thenReturn(Optional.empty());
 
         // when 1
-        CommonResponseDto<?> response1 = memberService.signup(signupDTO1);
+        CommonResponseDTO<?> response1 = memberService.signup(signupDTO1);
 
         // then 1
         assertEquals("회원 가입에 성공하셨습니다.", response1.getMessage());
@@ -88,7 +88,7 @@ public class MemberServiceTest {
         when(memberRepository.findByEmail(signupDTO1.getEmail())).thenReturn(Optional.empty());
 
         // when 1
-        CommonResponseDto<?> response1 = memberService.signup(signupDTO1);
+        CommonResponseDTO<?> response1 = memberService.signup(signupDTO1);
 
         // then 1
         assertEquals("회원 가입에 성공하셨습니다.", response1.getMessage());

@@ -6,14 +6,13 @@ import com.pjh.plusproject.Comment.DTO.CommentRequestDTO;
 import com.pjh.plusproject.Comment.DTO.CommentResponseDTO;
 import com.pjh.plusproject.Comment.Entity.Comment;
 import com.pjh.plusproject.Comment.Repository.CommentRepository;
-import com.pjh.plusproject.Global.Common.CommonResponseDto;
+import com.pjh.plusproject.Global.DTO.CommonResponseDTO;
 import com.pjh.plusproject.Global.Exception.HttpStatusCode;
 import com.pjh.plusproject.Global.Exception.UnauthorizatedAccessException;
 import com.pjh.plusproject.Member.Entity.Member;
 import com.pjh.plusproject.Member.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +29,7 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public CommonResponseDto<?> showBoardAllComment(long boardId) {
+    public CommonResponseDTO<?> showBoardAllComment(long boardId) {
         boardRepository.findById(boardId).orElseThrow(
                 ()-> new NoSuchElementException("해당 게시글을 찾을 수 없습니다.")
         );
@@ -46,9 +45,9 @@ public class CommentService {
                             .build()
             );
         }
-        return new CommonResponseDto<>("해당 게시글 모든 댓글 조회", HttpStatusCode.OK, responseDTOList);
+        return new CommonResponseDTO<>("해당 게시글 모든 댓글 조회", HttpStatusCode.OK, responseDTOList);
     }
-    public CommonResponseDto<?> createComment(long boardId, CommentRequestDTO commentRequestDTO) {
+    public CommonResponseDTO<?> createComment(long boardId, CommentRequestDTO commentRequestDTO) {
         // 한 게시글에 여러 개의 댓글이 달릴 수 있음
 
         // 인증된 사용자의 memberName을 가져옴
@@ -69,10 +68,10 @@ public class CommentService {
         commentRepository.save(comment);
 
         CommentResponseDTO responseDTO = comment.showResponseDTO(comment);
-        return new CommonResponseDto<>("해당 게시글 댓글 작성 성공", HttpStatusCode.OK, responseDTO);
+        return new CommonResponseDTO<>("해당 게시글 댓글 작성 성공", HttpStatusCode.OK, responseDTO);
     }
 
-    public CommonResponseDto<?> updateComment(long commentId, CommentRequestDTO requestDTO) {
+    public CommonResponseDTO<?> updateComment(long commentId, CommentRequestDTO requestDTO) {
         // CommentRepository에 해당 id 존재하는지?
         Comment comment = commentRepository.findById(commentId).orElseThrow();
         // BoardRepository에 해당 게시글 존재하는지?
@@ -86,10 +85,10 @@ public class CommentService {
         commentRepository.save(comment);
         CommentResponseDTO responseDTO = comment.showResponseDTO(comment);
 
-        return new CommonResponseDto<>("해당 게시글 댓글 수정 성공", HttpStatusCode.OK, responseDTO);
+        return new CommonResponseDTO<>("해당 게시글 댓글 수정 성공", HttpStatusCode.OK, responseDTO);
     }
 
-    public CommonResponseDto<?> deleteComment(long commentId) {
+    public CommonResponseDTO<?> deleteComment(long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 ()-> new NoSuchElementException("해당 댓글은 존재하지 않습니다.")
         );
@@ -97,7 +96,7 @@ public class CommentService {
             throw new UnauthorizatedAccessException("해당 멤버는 삭제할 권한이 없습니다.");
         }
         commentRepository.deleteById(commentId);
-        return new CommonResponseDto<>("해당 게시글 댓글 삭제 성공", HttpStatusCode.OK, null);
+        return new CommonResponseDTO<>("해당 게시글 댓글 삭제 성공", HttpStatusCode.OK, null);
     }
     private String loginMemberName(){
         return SecurityContextHolder.getContext().getAuthentication().getName();

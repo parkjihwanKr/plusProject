@@ -1,23 +1,20 @@
-package com.pjh.plusproject.Global.Common;
+package com.pjh.plusproject.Global.DTO;
 
 import com.pjh.plusproject.Global.Exception.HttpStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommonResponseDto<T>{
+public class CommonResponseDTO<T>{
     private String message;
     private HttpStatusCode status;
     private T data;
 
     // 열거형 데이터 넣고 싶은데?
-    public CommonResponseDto(String message, HttpStatusCode status){
+    public CommonResponseDTO(String message, HttpStatusCode status){
         this.message = message;
         this.status = status;
     }

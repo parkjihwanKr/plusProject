@@ -1,16 +1,12 @@
 package com.pjh.plusproject.Board.Service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.PutObjectResult;
 import com.pjh.plusproject.Board.DTO.BoardRequestDTO;
-import com.pjh.plusproject.Board.DTO.BoardResponseDTO;
 import com.pjh.plusproject.Board.Entity.Board;
 import com.pjh.plusproject.Board.Repository.BoardRepository;
-import com.pjh.plusproject.Global.Common.CommonResponseDto;
-import com.pjh.plusproject.Global.Exception.HttpStatusCode;
+import com.pjh.plusproject.Global.DTO.CommonResponseDTO;
 import com.pjh.plusproject.Global.Security.MemberDetailsImpl;
 import com.pjh.plusproject.Member.Entity.Member;
-import com.pjh.plusproject.Member.Entity.MemberRoleEnum;
 import com.pjh.plusproject.Member.Repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,10 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -65,7 +57,7 @@ public class BoardServiceTest {
         // when
         when(amazonS3.putObject(any(), any(), any(), any())).thenReturn(null);
 
-        CommonResponseDto<?> response = boardService.createBoard(image, boardRequestDTO, memberDetails);
+        CommonResponseDTO<?> response = boardService.createBoard(image, boardRequestDTO, memberDetails);
 
         // then
         assertEquals("게시글 작성 성공", response.getMessage());
@@ -145,7 +137,7 @@ public class BoardServiceTest {
         when(boardRepository.showBoardPage(pageable)).thenReturn(mockBoardPage);
 
         // when
-        CommonResponseDto<?> response = boardService.showAllBoardList(pageable);
+        CommonResponseDTO<?> response = boardService.showAllBoardList(pageable);
 
         // then
         assertEquals("모든 게시글 조회 성공", response.getMessage());
@@ -169,7 +161,7 @@ public class BoardServiceTest {
         when(boardRepository.findAllByMemberId(memberId)).thenReturn(memberBoardList);
 
         // when
-        CommonResponseDto<?> response = boardService.showMemberBoard(memberId);
+        CommonResponseDTO<?> response = boardService.showMemberBoard(memberId);
 
         // then
         assertEquals("해당 멤버의 모든 게시글 조회 성공", response.getMessage());

@@ -2,10 +2,9 @@ package com.pjh.plusproject.Like.Service;
 
 import com.pjh.plusproject.Board.Entity.Board;
 import com.pjh.plusproject.Board.Repository.BoardRepository;
-import com.pjh.plusproject.Global.Common.CommonResponseDto;
+import com.pjh.plusproject.Global.DTO.CommonResponseDTO;
 import com.pjh.plusproject.Global.Exception.HttpStatusCode;
 import com.pjh.plusproject.Like.DTO.LikeResponseDTO;
-import com.pjh.plusproject.Like.Entity.Like;
 import com.pjh.plusproject.Like.Repository.LikeRepository;
 import com.pjh.plusproject.Member.Entity.Member;
 import com.pjh.plusproject.Member.Repository.MemberRepository;
@@ -16,18 +15,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -75,7 +71,7 @@ public class LikeServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         // when
-        CommonResponseDto<?> result = likeService.likeBoard(boardId);
+        CommonResponseDTO<?> result = likeService.likeBoard(boardId);
 
         // then
         assertNotNull(result);
@@ -170,7 +166,7 @@ public class LikeServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         // when
-        CommonResponseDto<?> result = likeService.likeMember(toMemberId);
+        CommonResponseDTO<?> result = likeService.likeMember(toMemberId);
 
         // then
         assertEquals("해당 멤버 좋아요 성공", result.getMessage());

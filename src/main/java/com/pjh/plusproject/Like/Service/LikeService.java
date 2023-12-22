@@ -2,7 +2,7 @@ package com.pjh.plusproject.Like.Service;
 
 import com.pjh.plusproject.Board.Entity.Board;
 import com.pjh.plusproject.Board.Repository.BoardRepository;
-import com.pjh.plusproject.Global.Common.CommonResponseDto;
+import com.pjh.plusproject.Global.DTO.CommonResponseDTO;
 import com.pjh.plusproject.Global.Exception.HttpStatusCode;
 import com.pjh.plusproject.Like.DTO.LikeResponseDTO;
 import com.pjh.plusproject.Like.Entity.Like;
@@ -23,7 +23,7 @@ public class LikeService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public CommonResponseDto<?> likeBoard(long boardId) {
+    public CommonResponseDTO<?> likeBoard(long boardId) {
         // NoSuchElementException
         Board board = boardRepository.findById(boardId).orElseThrow(
                 ()-> new NoSuchElementException("해당하는 게시글은 존재하지 않습니다.")
@@ -59,11 +59,11 @@ public class LikeService {
                 .boardDescription(board.getDescription())
                 .build();
 
-        return new CommonResponseDto<>("해당 게시글 좋아요 성공", HttpStatusCode.OK, responseDTO);
+        return new CommonResponseDTO<>("해당 게시글 좋아요 성공", HttpStatusCode.OK, responseDTO);
     }
 
     @Transactional
-    public CommonResponseDto<?> unlikeBoard(long boardId) {
+    public CommonResponseDTO<?> unlikeBoard(long boardId) {
         // boardId 찾기
         Board board = boardRepository.findById(boardId).orElseThrow(
                 ()-> new NoSuchElementException("해당하는 게시글은 존재하지 않습니다.")
@@ -75,10 +75,10 @@ public class LikeService {
             throw new IllegalArgumentException("해당 멤버는 해당 게시글에 대한 '좋아요'를 누르지 않았습니다.");
         }
         likeRepository.deleteByBoardId(boardId);
-        return new CommonResponseDto<>("해당 게시글 좋아요 취소 성공", HttpStatusCode.OK, null);
+        return new CommonResponseDTO<>("해당 게시글 좋아요 취소 성공", HttpStatusCode.OK, null);
     }
 
-    public CommonResponseDto<?> likeMember(long toMemberId){
+    public CommonResponseDTO<?> likeMember(long toMemberId){
         // '좋아요'를 받는 멤버 존재하지는지?
         Member toMember = memberRepository.findById(toMemberId).orElseThrow(
                 ()-> new NoSuchElementException("해당 좋아요를 하려는 멤버는 존재하지 않습니다.")
@@ -105,11 +105,11 @@ public class LikeService {
                 .toMemberName(toMember.getUsername())
                 .build();
 
-        return new CommonResponseDto<>("해당 멤버 좋아요 성공", HttpStatusCode.OK, likeResponseDTO);
+        return new CommonResponseDTO<>("해당 멤버 좋아요 성공", HttpStatusCode.OK, likeResponseDTO);
     }
 
     @Transactional
-    public CommonResponseDto<?> unlikeMember(long memberId){
+    public CommonResponseDTO<?> unlikeMember(long memberId){
         Member toMember = memberRepository.findById(memberId).orElseThrow();
         Member fromMember = memberRepository.findByUsername(getLoginMemberName()).orElseThrow();
         boolean hasLiked = likeRepository.existsByToMemberIdAndFromMemberId(fromMember.getId(), toMember.getId());
@@ -118,7 +118,7 @@ public class LikeService {
         }
 
         likeRepository.deleteByToMemberId(memberId);
-        return new CommonResponseDto<>("해당 멤버 좋아요 취소 성공", HttpStatusCode.OK, null);
+        return new CommonResponseDTO<>("해당 멤버 좋아요 취소 성공", HttpStatusCode.OK, null);
     }
 
 

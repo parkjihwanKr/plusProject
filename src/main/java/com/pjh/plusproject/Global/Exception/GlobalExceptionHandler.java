@@ -1,6 +1,6 @@
 package com.pjh.plusproject.Global.Exception;
 
-import org.springframework.cglib.core.Local;
+import com.pjh.plusproject.Global.DTO.ExceptionResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -1,6 +1,6 @@
 package com.pjh.plusproject.Like.Controller;
 
-import com.pjh.plusproject.Global.Common.CommonResponseDto;
+import com.pjh.plusproject.Global.DTO.CommonResponseDTO;
 import com.pjh.plusproject.Like.Service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,26 +13,26 @@ public class LikeController {
 
     private final LikeService likeService;
     @PostMapping("/board/{boardId}/like")
-    public ResponseEntity<CommonResponseDto<?>> likeBoard(@PathVariable long boardId){
-        CommonResponseDto<?> responseDto = likeService.likeBoard(boardId);
+    public ResponseEntity<CommonResponseDTO<?>> likeBoard(@PathVariable long boardId){
+        CommonResponseDTO<?> responseDto = likeService.likeBoard(boardId);
         return new ResponseEntity<>(responseDto, responseDto.getStatus().getHttpStatus());
     }
 
     @DeleteMapping("/board/{boardId}/like")
-    public ResponseEntity<CommonResponseDto<?>> unlikeBoard(@PathVariable long boardId){
-        CommonResponseDto<?> responseDto = likeService.unlikeBoard(boardId);
+    public ResponseEntity<CommonResponseDTO<?>> unlikeBoard(@PathVariable long boardId){
+        CommonResponseDTO<?> responseDto = likeService.unlikeBoard(boardId);
         return new ResponseEntity<>(responseDto, responseDto.getStatus().getHttpStatus());
     }
 
     @PostMapping("/member/{memberId}/like")
-    public ResponseEntity<CommonResponseDto<?>> likeMember(@PathVariable long memberId){
-        CommonResponseDto<?> responseDto = likeService.likeMember(memberId);
+    public ResponseEntity<CommonResponseDTO<?>> likeMember(@PathVariable long memberId){
+        CommonResponseDTO<?> responseDto = likeService.likeMember(memberId);
         return new ResponseEntity<>(responseDto, responseDto.getStatus().getHttpStatus());
     }
 
     @DeleteMapping("/member/{memberId}/like")
-    public ResponseEntity<CommonResponseDto<?>> unlikeMember(@PathVariable long memberId){
-        CommonResponseDto<?> responseDto = likeService.unlikeMember(memberId);
+    public ResponseEntity<CommonResponseDTO<?>> unlikeMember(@PathVariable long memberId){
+        CommonResponseDTO<?> responseDto = likeService.unlikeMember(memberId);
         return new ResponseEntity<>(responseDto, responseDto.getStatus().getHttpStatus());
     }
 }

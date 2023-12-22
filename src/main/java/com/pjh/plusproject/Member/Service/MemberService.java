@@ -1,6 +1,6 @@
 package com.pjh.plusproject.Member.Service;
 
-import com.pjh.plusproject.Global.Common.CommonResponseDto;
+import com.pjh.plusproject.Global.DTO.CommonResponseDTO;
 import com.pjh.plusproject.Global.DTO.TokenDTO;
 import com.pjh.plusproject.Global.Exception.HttpStatusCode;
 import com.pjh.plusproject.Global.Jwt.JwtProvider;
@@ -32,7 +32,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final RedisProvider redisProvider;
-    public CommonResponseDto<?> signup(SignupDTO signupDTO) {
+    public CommonResponseDTO<?> signup(SignupDTO signupDTO) {
         // 해당하는 username이 중복되는지만 확인
         Member duplicateUsernameMember = memberRepository.findByUsername(signupDTO.getUsername()).orElse(null);
         // 해당하는 username이 중복될 때는?
@@ -53,11 +53,11 @@ public class MemberService {
                 .role(MemberRoleEnum.USER)
                 .build();
         memberRepository.save(member);
-        return new CommonResponseDto<>("회원 가입에 성공하셨습니다.", HttpStatusCode.CREATED);
+        return new CommonResponseDTO<>("회원 가입에 성공하셨습니다.", HttpStatusCode.CREATED);
     }
 
     @Transactional
-    public CommonResponseDto<?> login(LoginDTO loginDTO, HttpServletResponse res) {
+    public CommonResponseDTO<?> login(LoginDTO loginDTO, HttpServletResponse res) {
         Member memberEntity = memberRepository.findByUsername(loginDTO.getUsername()).orElseThrow();
         // 인증 객체 생성
         Authentication authentication = createAuthentication(memberEntity);
@@ -79,7 +79,7 @@ public class MemberService {
         // redis에는 key-value 형식으로 출력
         redisProvider.saveKey(key, Math.toIntExact(jwtProvider.getRefreshTokenExpiration() / 1000),tokenDTO.getRefreshToken());
 
-        return new CommonResponseDto<>("로그인에 성공하셨습니다.", HttpStatusCode.OK);
+        return new CommonResponseDTO<>("로그인에 성공하셨습니다.", HttpStatusCode.OK);
     }
 
     private Authentication createAuthentication(Member member){

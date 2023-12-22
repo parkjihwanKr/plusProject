@@ -1,4 +1,4 @@
-package com.pjh.plusproject.Global.Exception;
+package com.pjh.plusproject.Global.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

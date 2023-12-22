@@ -3,36 +3,25 @@ package com.pjh.plusproject.Comment.Service;
 import com.pjh.plusproject.Board.Entity.Board;
 import com.pjh.plusproject.Board.Repository.BoardRepository;
 import com.pjh.plusproject.Comment.DTO.CommentRequestDTO;
-import com.pjh.plusproject.Comment.DTO.CommentResponseDTO;
-import com.pjh.plusproject.Comment.Entity.Comment;
 import com.pjh.plusproject.Comment.Repository.CommentRepository;
-import com.pjh.plusproject.Global.Common.CommonResponseDto;
-import com.pjh.plusproject.Global.Exception.HttpStatusCode;
-import com.pjh.plusproject.Global.Security.MemberDetailsImpl;
+import com.pjh.plusproject.Global.DTO.CommonResponseDTO;
 import com.pjh.plusproject.Member.Entity.Member;
 import com.pjh.plusproject.Member.Repository.MemberRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.security.Security;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -88,7 +77,7 @@ class CommentServiceTest {
 
         // when
 
-        CommonResponseDto<?> result = commentService.createComment(board.getId(), requestDTO);
+        CommonResponseDTO<?> result = commentService.createComment(board.getId(), requestDTO);
 
         // then
         assertEquals(HttpStatus.OK, result.getStatus().getHttpStatus());
