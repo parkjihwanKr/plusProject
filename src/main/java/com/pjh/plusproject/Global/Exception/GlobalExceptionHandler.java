@@ -1,5 +1,6 @@
 package com.pjh.plusproject.Global.Exception;
 
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,4 +33,9 @@ public class GlobalExceptionHandler {
         return new ExceptionResponseDTO<>(e.getMessage(), HttpStatusCode.INTERNAL_SERVER_ERROR, LocalDateTime.now());
     }
 
+    @ExceptionHandler(UnauthorizatedAccessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponseDTO<?> unauthorizatedAccessException(UnauthorizatedAccessException e){
+        return new ExceptionResponseDTO<>(e.getMessage(), HttpStatusCode.BAD_REQUEST, LocalDateTime.now());
+    }
 }

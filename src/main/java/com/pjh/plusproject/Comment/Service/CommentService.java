@@ -8,10 +8,12 @@ import com.pjh.plusproject.Comment.Entity.Comment;
 import com.pjh.plusproject.Comment.Repository.CommentRepository;
 import com.pjh.plusproject.Global.Common.CommonResponseDto;
 import com.pjh.plusproject.Global.Exception.HttpStatusCode;
+import com.pjh.plusproject.Global.Exception.UnauthorizatedAccessException;
 import com.pjh.plusproject.Member.Entity.Member;
 import com.pjh.plusproject.Member.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -50,10 +52,9 @@ public class CommentService {
         // 한 게시글에 여러 개의 댓글이 달릴 수 있음
 
         // 인증된 사용자의 memberName을 가져옴
-        String memberName = SecurityContextHolder.getContext().getAuthentication().getName();
+        String memberName = loginMemberName();
         // 만약에 인증되지 않은 사용자가 들어가면? -> 이는 WebSecurityConfig.java에서 막을꺼기 때문에
         // Service단까지 들어올 수 없음. 그러므로 memberName은 null이거나 공백의 문자열이 들어갈 수 없음
-        log.info("memberName : "+memberName);
         Member member = memberRepository.findByUsername(memberName).orElseThrow();
         // 에러가 났을 때는 예외처리를 하는게 좋다.
         // 명시적으로 exception를 찍어주는게 좋다.
@@ -72,9 +73,15 @@ public class CommentService {
     }
 
     public CommonResponseDto<?> updateComment(long commentId, CommentRequestDTO requestDTO) {
+        // CommentRepository에 해당 id 존재하는지?
         Comment comment = commentRepository.findById(commentId).orElseThrow();
+        // BoardRepository에 해당 게시글 존재하는지?
         boardRepository.findById(comment.getBoard().getId()).orElseThrow();
-        memberRepository.findById(comment.getMember().getId()).orElseThrow();
+        // MemberRepository에 해당 멤버가 존재하는지?
+        Member member = memberRepository.findById(comment.getMember().getId()).orElseThrow();
+        if(!member.getUsername().equals(loginMemberName())){
+            throw new UnauthorizatedAccessException("해당 멤버는 수정 권한이 없습니다.");
+        }
         comment.updateComment(requestDTO.getContent());
         commentRepository.save(comment);
         CommentResponseDTO responseDTO = comment.showResponseDTO(comment);
@@ -83,11 +90,18 @@ public class CommentService {
     }
 
     public CommonResponseDto<?> deleteComment(long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow();
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                ()-> new NoSuchElementException("해당 댓글은 존재하지 않습니다.")
+        );
+        if(!comment.getMember().getUsername().equals(loginMemberName())){
+            throw new UnauthorizatedAccessException("해당 멤버는 삭제할 권한이 없습니다.");
+        }
         commentRepository.deleteById(commentId);
         return new CommonResponseDto<>("해당 게시글 댓글 삭제 성공", HttpStatusCode.OK, null);
     }
-
+    private String loginMemberName(){
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
     /*
     [ ]  챌린지 과제) 전체 조회가 아닌 페이징 조회를 할 수 있도록 해보기
     [ ]  (챌린지 과제) 페이징 + 커스텀 정렬 기능 구현하기 -> 사용자가 입력한 key와
