@@ -22,4 +22,6 @@ public class SignupDTO {
     @NotNull
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,6}$", message = "유효한 이메일 주소를 입력하세요.")
     private String email;
+
+    // validation 문제로 ->
 }

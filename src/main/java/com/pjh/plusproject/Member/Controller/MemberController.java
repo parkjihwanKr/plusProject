@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j(topic = "Member Controller")
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
@@ -28,6 +28,8 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<CommonResponseDTO<?>> login(@Valid @RequestBody LoginDTO loginDTO, HttpServletResponse res){
+        log.info("LoginDTO.getUsername() : "+loginDTO.getUsername());
+        log.info("LoginDTO.getPassword() : "+loginDTO.getPassword());
         CommonResponseDTO<?> commonResponseDto = memberService.login(loginDTO, res);
         return new ResponseEntity<>(commonResponseDto, commonResponseDto.getStatus().getHttpStatus());
     }
