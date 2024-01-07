@@ -67,3 +67,8 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// WAR 플러그인 구성
+war {
+    enabled = true
+}
