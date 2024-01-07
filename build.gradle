@@ -6,6 +6,7 @@ plugins {
 
 group = 'com.pjh'
 version = '0.0.1-SNAPSHOT'
+apply plugin : 'war'
 
 java {
     sourceCompatibility = '17'
@@ -54,6 +55,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    // ci/cd test
+    // providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 }
 
 tasks.named('bootBuildImage') {
